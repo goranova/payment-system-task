@@ -1,0 +1,34 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<head th:replace="layouts::header"></head>
+
+<body>
+  <nav th:replace="layouts ::navbar"></nav>
+
+  <div>
+      <table th:fragment="transactions"  class="table table-bordered">
+          <thead>
+          <tr>
+              <th>Transaction Type</th>
+              <th>Transaction Status</th>
+              <th>Transaction Amount</th>
+              <th>Customer_email</th>
+              <th>Customer_phone</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="trans : ${transactions}">
+              <td th:text="${trans.transactionType}"></td>
+              <td th:text="${trans.status}"></td>
+              <td th:text="${trans.amount}"></td>
+              <td th:text=${trans.customerEmail}></td>
+              <td th:text=${trans.customerPhone}></td>
+          </tr>
+          </tbody>
+      </table>
+
+  </div>
+
+</body>
+</html>
