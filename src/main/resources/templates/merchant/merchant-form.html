@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layouts::header"></head>
+
+<body>
+<nav th:replace="layouts ::navbar"></nav>
+</br>
+<h4>Edit Merchant</h4>
+   <div class="form-group">
+     <form th:action="@{/merchants/save}" th:object="${merchant}" method="POST">
+        <h1>Choose Status:</h1>
+         <label>
+
+             <select  class="custom-select my-1 mr-sm-2" th:field="${merchant.merchantStatus}">
+                 <option th:value="ACTIVE"> ACTIVE </option>
+                 <option th:value="INACTIVE"> INACTIVE </option>
+             </select>
+         </label>
+         <h1>Enter Description:</h1>
+         <textarea class="form-control"  type="text" placeholder="Enter Description" th:field="${merchant.description}"></textarea>
+         </br>
+         <h1>Enter Email:</h1>
+         <input class="form-control"  type="text" placeholder="Email" th:field=${merchant.email}/>
+         </br>
+       <table>
+           <tr>
+               <td> <button type="submit"> Save Merchant </button> </td>
+
+     </form>
+       <td> <form  th:action =  "@{/merchants/display}"  method="GET">
+           <button type="submit">Cancel</button>
+       </form>
+       </td>
+       </tr>
+     </br>
+   
+     
+   </div>
+
+</body>
+
+</html>
