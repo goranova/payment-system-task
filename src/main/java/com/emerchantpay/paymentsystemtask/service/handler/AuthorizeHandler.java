@@ -1,35 +1,37 @@
 package com.emerchantpay.paymentsystemtask.service.handler;
 
+import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
+import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
-import com.emerchantpay.paymentsystemtask.validation.AuthorizeValidator;
-import com.emerchantpay.paymentsystemtask.validation.TransactionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 public class AuthorizeHandler extends TransactionHandler {
 
     @Autowired
-   TransactionService service;
+    TransactionService trService;
+
     @Override
-    public List<TransactionDto> handleTransaction(TransactionDto dto) {
-      List<TransactionDto>  transactions = new ArrayList<>();
+    public List<TransactionDto> handleTransaction(TransactionDto transaction) {
+        List<TransactionDto> transactions = new ArrayList<>();
 
-        if (dto.getTransactionType().equals(TransactionType.AUTHORIZE.getName())) {
+        if (transaction.getTransactionType().equals(TransactionType.AUTHORIZE.getName())) {
 
-            TransactionValidator authValidator = new AuthorizeValidator();
-            TransactionDto validatedTrans = authValidator.validate(dto);
-            TransactionDto savedAuthTransaction = service.saveTransaction(TransactionConverter.convertToAuthorize(validatedTrans));
+            TransactionDto savedAuthTransaction =
+                    trService.saveTransaction(TransactionConverter.convertToAuthorize(transaction));
             transactions.add(savedAuthTransaction);
-            if (validatedTrans.getStatus().equals(TransactionStatus.APPROVED.name())) {
-                TransactionDto chargeTransaction = createChargedTransaction(validatedTrans);
+
+            if (transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
+                TransactionDto chargeTransaction = createChargedTransaction(transaction);
                 if (this.nextTransition != null) {
                     transactions.addAll(nextTransition.handleTransaction(chargeTransaction));
                 }
@@ -38,7 +40,7 @@ public class AuthorizeHandler extends TransactionHandler {
             }
         } else {
             if (this.nextTransition != null) {
-                return nextTransition.handleTransaction(dto);
+                return nextTransition.handleTransaction(transaction);
             }
         }
         return transactions;

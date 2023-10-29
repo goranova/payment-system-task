@@ -17,14 +17,13 @@ public class MerchantValidator {
     public MerchantDto validateStatus(MerchantDto merchantDto) {
 
         if (merchantDto.getMerchantStatus() != null &&
-                (merchantDto.getMerchantStatus().equals(MerchantStatus.ACTIVE.name())
+                ( merchantDto.getMerchantStatus().equals(MerchantStatus.ACTIVE.name())
                         || merchantDto.getMerchantStatus().equals(MerchantStatus.INACTIVE.name()))) {
 
-            merchantDto.setMerchantStatus(MerchantStatus.INACTIVE.name());
+           return merchantDto;
         }
+        merchantDto.setMerchantStatus(MerchantStatus.INACTIVE.name());
         return merchantDto;
-
-
     }
 
     public MerchantDto validateEmail(MerchantDto merchantDto) {

@@ -4,13 +4,14 @@ import com.emerchantpay.paymentsystemtask.dao.TransactionRepository;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
-import com.emerchantpay.paymentsystemtask.model.AuthorizeTransaction;
-import com.emerchantpay.paymentsystemtask.model.ChargeTransaction;
-import com.emerchantpay.paymentsystemtask.model.RefundTransaction;
-import com.emerchantpay.paymentsystemtask.model.ReversalTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.AuthorizeTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.ChargeTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.RefundTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.ReversalTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,14 +60,21 @@ public class TransactionService {
 
     public TransactionDto findChargeTransactionByRefId(String referenceId, TransactionStatus status) {
         ChargeTransaction charge = trans.findChargeTransactionByRefId(referenceId, status);
-        TransactionDto transaction = TransactionConverter.convertToTransactionDto(charge);
-        return transaction;
+        if(charge!=null){
+            TransactionDto transaction = TransactionConverter.convertToTransactionDto(charge);
+            return transaction;
+        }else{
+            return  null;
+        }
     }
 
     public TransactionDto findAuthorizeTransactionByRefId(String referenceId, TransactionStatus status) {
         AuthorizeTransaction auth = trans.findAuthorizeTransactionByRefId(referenceId, status);
-        TransactionDto transaction = TransactionConverter.convertToTransactionDto(auth);
-        return transaction;
+        if(auth!=null){
+            TransactionDto transaction = TransactionConverter.convertToTransactionDto(auth);
+            return transaction;
+        }
+        return  null;
     }
 
 
@@ -85,6 +93,10 @@ public class TransactionService {
                 .map(TransactionConverter::convertToTransactionDto)
                 .collect(Collectors.toList());
 
+    }
+
+    public void deleteTransOlderThanHour(Timestamp timestamp){
+        trans.deleteTranOlderThanHour(timestamp);
     }
 
 

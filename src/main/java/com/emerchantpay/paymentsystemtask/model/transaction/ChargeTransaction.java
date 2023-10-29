@@ -1,12 +1,12 @@
-package com.emerchantpay.paymentsystemtask.model;
+package com.emerchantpay.paymentsystemtask.model.transaction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @Entity
-@DiscriminatorValue("Authorize")
-public class AuthorizeTransaction extends Transaction {
+@DiscriminatorValue("Charge")
+public class ChargeTransaction extends Transaction {
 
     @Column(name = "AMOUNT")
     private Double amount;
@@ -18,5 +18,4 @@ public class AuthorizeTransaction extends Transaction {
     public void setAmount(Double amount) {
         this.amount = amount;
     }
-
 }

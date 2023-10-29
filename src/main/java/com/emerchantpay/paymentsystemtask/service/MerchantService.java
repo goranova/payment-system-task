@@ -3,14 +3,13 @@ package com.emerchantpay.paymentsystemtask.service;
 import com.emerchantpay.paymentsystemtask.dao.MerchantRepository;
 import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
-import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
 import com.emerchantpay.paymentsystemtask.service.handler.TransactionHandlerService;
+import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +22,7 @@ public class MerchantService {
 
 
     public List<MerchantDto> findAllMerchants() {
+
         List<Merchant> merchants = merchantRep.findAll();
         return merchants.stream()
                 .map(merchant -> MerchantConverter.convertToMerchantDto(merchant))
@@ -32,6 +32,7 @@ public class MerchantService {
     }
 
     public MerchantDto findById(String id) {
+
         Long identifier = Long.valueOf(id);
         Optional<Merchant> merchant = merchantRep.findById(identifier);
         if (!merchant.isEmpty()) {
@@ -42,10 +43,14 @@ public class MerchantService {
 
     public boolean editMerchant(MerchantDto existingMerchant, MerchantDto editedMerchant) {
         if (existingMerchant != null && editedMerchant != null) {
-            if (!editedMerchant.equals(existingMerchant)) {
-                existingMerchant.setEmail(editedMerchant.getEmail());
-                existingMerchant.setDescription(editedMerchant.getEmail());
-                existingMerchant.setMerchantStatus(editedMerchant.getMerchantStatus());
+
+            MerchantValidator validator = new MerchantValidator();
+            MerchantDto editedValidMerchant = validator.validate(editedMerchant);
+
+            if (!editedMerchant.equals(editedValidMerchant)) {
+                existingMerchant.setEmail(editedValidMerchant.getEmail());
+                existingMerchant.setDescription(editedValidMerchant.getEmail());
+                existingMerchant.setMerchantStatus(editedValidMerchant.getMerchantStatus());
                 merchantRep.save(MerchantConverter.convertToMerchant(existingMerchant));
                 return true;
             }
@@ -56,12 +61,17 @@ public class MerchantService {
     public List<MerchantDto> saveMerchants(List<MerchantDto> merchantsDto) {
         List<MerchantDto> merchantDtos = new ArrayList<>();
         for (MerchantDto mr : merchantsDto) {
-            Merchant savedMerchant = merchantRep.save(MerchantConverter.convertToMerchant(mr));
+
+            MerchantValidator validator = new MerchantValidator();
+            MerchantDto validMerchant = validator.validate(mr);
+
+            Merchant savedMerchant = merchantRep.save(MerchantConverter.convertToMerchant(validMerchant));
+            MerchantDto savedMerchantDto = MerchantConverter.convertToMerchantDto(savedMerchant);
             merchantDtos.add(MerchantConverter.convertToMerchantDto(savedMerchant));
 
             if (!mr.getTransactions().isEmpty()) {
                 mr.getTransactions().stream()
-                        .forEach(tr -> tr.setMerchant(savedMerchant));
+                        .forEach(tr -> tr.setMerchant(savedMerchantDto));
                 trHandlerService.handleTransactionChain(mr.getTransactions());
             }
         }

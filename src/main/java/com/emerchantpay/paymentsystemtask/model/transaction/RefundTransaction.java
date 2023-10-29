@@ -1,4 +1,4 @@
-package com.emerchantpay.paymentsystemtask.model;
+package com.emerchantpay.paymentsystemtask.model.transaction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;

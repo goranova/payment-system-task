@@ -1,10 +1,10 @@
 package com.emerchantpay.paymentsystemtask.dto;
 
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
-import com.emerchantpay.paymentsystemtask.enums.TransactionType;
-import com.emerchantpay.paymentsystemtask.model.*;
-import org.hibernate.dialect.unique.CreateTableUniqueDelegate;
-import org.hibernate.engine.spi.ManagedEntity;
+import com.emerchantpay.paymentsystemtask.model.transaction.AuthorizeTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.ChargeTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.RefundTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.ReversalTransaction;
 
 public class TransactionConverter {
 
@@ -17,7 +17,8 @@ public class TransactionConverter {
         dto.setCustomerPhone(authorizeTransaction.getCustomerPhone());
         dto.setReferenceIdentifier(authorizeTransaction.getReferenceIdentifier());
         dto.setAmount(authorizeTransaction.getAmount());
-        dto.setMerchant(authorizeTransaction.getMerchant());
+        dto.setMerchant(MerchantConverter.convertToMerchantDto(authorizeTransaction.getMerchant()));
+        dto.setTimestamp(authorizeTransaction.getTimestamp().toString());
         return dto;
     }
 
@@ -30,7 +31,8 @@ public class TransactionConverter {
         dto.setCustomerPhone(chargeTransaction.getCustomerPhone());
         dto.setReferenceIdentifier(chargeTransaction.getReferenceIdentifier());
         dto.setAmount(chargeTransaction.getAmount());
-        dto.setMerchant(chargeTransaction.getMerchant());
+        dto.setMerchant(MerchantConverter.convertToMerchantDto(chargeTransaction.getMerchant()));
+        dto.setTimestamp(chargeTransaction.getTimestamp().toString());
         return dto;
     }
 
@@ -43,7 +45,8 @@ public class TransactionConverter {
         dto.setCustomerPhone(refundTransaction.getCustomerPhone());
         dto.setReferenceIdentifier(refundTransaction.getReferenceIdentifier());
         dto.setAmount(refundTransaction.getAmount());
-        dto.setMerchant(refundTransaction.getMerchant());
+        dto.setMerchant(MerchantConverter.convertToMerchantDto(refundTransaction.getMerchant()));
+        dto.setTimestamp(refundTransaction.getTimestamp().toString());
         return dto;
 
     }
@@ -56,7 +59,8 @@ public class TransactionConverter {
         dto.setCustomerEmail(reversalTransaction.getCustomerEmail());
         dto.setCustomerPhone(reversalTransaction.getCustomerPhone());
         dto.setReferenceIdentifier(reversalTransaction.getReferenceIdentifier());
-        dto.setMerchant(reversalTransaction.getMerchant());
+        dto.setMerchant(MerchantConverter.convertToMerchantDto(reversalTransaction.getMerchant()));
+        dto.setTimestamp(reversalTransaction.getTimestamp().toString());
         return dto;
 
     }
@@ -69,7 +73,7 @@ public class TransactionConverter {
         auth.setCustomerPhone(dto.getCustomerPhone());
         auth.setStatus(TransactionStatus.valueOf(dto.getStatus()));
         auth.setTransactionType(dto.getTransactionType());
-        auth.setMerchant(dto.getMerchant());
+        auth.setMerchant(MerchantConverter.convertToMerchant(dto.getMerchant()));
         auth.setReferenceIdentifier(dto.getReferenceIdentifier());
         return auth;
     }
@@ -83,8 +87,7 @@ public class TransactionConverter {
         charge.setStatus(TransactionStatus.valueOf(dto.getStatus()));
         charge.setTransactionType(dto.getTransactionType());
         charge.setReferenceIdentifier(dto.getReferenceIdentifier());
-        charge.setMerchant(dto.getMerchant());
-
+        charge.setMerchant(MerchantConverter.convertToMerchant(dto.getMerchant()));
         return charge;
     }
 
@@ -97,8 +100,7 @@ public class TransactionConverter {
         refund.setStatus(TransactionStatus.valueOf(dto.getStatus()));
         refund.setTransactionType(dto.getTransactionType());
         refund.setReferenceIdentifier(dto.getReferenceIdentifier());
-        refund.setMerchant(dto.getMerchant());
-
+        refund.setMerchant(MerchantConverter.convertToMerchant(dto.getMerchant()));
         return refund;
     }
 
@@ -110,7 +112,7 @@ public class TransactionConverter {
         reversal.setStatus(TransactionStatus.valueOf(dto.getStatus()));
         reversal.setTransactionType(dto.getTransactionType());
         reversal.setReferenceIdentifier(dto.getReferenceIdentifier());
-        reversal.setMerchant(dto.getMerchant());
+        reversal.setMerchant(MerchantConverter.convertToMerchant(dto.getMerchant()));
         return reversal;
     }
 

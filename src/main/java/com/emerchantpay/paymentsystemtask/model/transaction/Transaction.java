@@ -1,9 +1,11 @@
-package com.emerchantpay.paymentsystemtask.model;
+package com.emerchantpay.paymentsystemtask.model.transaction;
 
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
+import com.emerchantpay.paymentsystemtask.model.Merchant;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -22,12 +24,15 @@ public class Transaction implements Serializable {
     private String customerEmail;
     @Column(name = "CUSTOMER_PHONE")
     private String customerPhone;
-    @ManyToOne(cascade= {CascadeType.PERSIST})
+    @ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "MERCHANT_ID")
     private Merchant merchant;
 
     @Column(name = "REFERENCE_ID")
     private String referenceIdentifier;
+
+    @Column(name = "TIMESTMP")
+    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
     public Transaction() {
     }
@@ -86,4 +91,10 @@ public class Transaction implements Serializable {
     public void setReferenceIdentifier(String referenceIdentifier) {
         this.referenceIdentifier = referenceIdentifier;
     }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+
 }

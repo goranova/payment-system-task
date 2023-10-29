@@ -1,6 +1,7 @@
 package com.emerchantpay.paymentsystemtask.model;
 
 import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
+import com.emerchantpay.paymentsystemtask.model.transaction.Transaction;
 import jakarta.persistence.*;
 
 import java.io.Serializable;

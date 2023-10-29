@@ -1,7 +1,5 @@
 package com.emerchantpay.paymentsystemtask.dto;
 
-import com.emerchantpay.paymentsystemtask.model.Transaction;
-
 import java.util.*;
 
 public class MerchantDto {

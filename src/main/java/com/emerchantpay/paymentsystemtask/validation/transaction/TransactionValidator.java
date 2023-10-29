@@ -1,8 +1,12 @@
-package com.emerchantpay.paymentsystemtask.validation;
+package com.emerchantpay.paymentsystemtask.validation.transaction;
 
+import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
+import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
+import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
+import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.UUID;
@@ -14,8 +18,11 @@ public interface TransactionValidator {
         validateStatus(transaction);
         validateEmail(transaction);
         validateAmount(transaction);
+        validateMerchant(transaction);
         return transaction;
     }
+
+    TransactionDto validateTransaction(TransactionDto transactionDto);
 
     default TransactionDto validateStatus(TransactionDto transactionDto) {
         if (!transactionDto.getStatus().equals(TransactionStatus.APPROVED.name())
@@ -58,6 +65,19 @@ public interface TransactionValidator {
     default TransactionDto validateReferenceId(TransactionDto transaction){
         if(transaction.getReferenceIdentifier()!=null) {
             return transaction;
+        }
+        transaction.setStatus(TransactionStatus.ERROR.name());
+        return transaction;
+    }
+
+    default  TransactionDto validateMerchant(TransactionDto transaction) {
+
+        MerchantValidator merchantValidator = new MerchantValidator();
+        if(transaction.getMerchant()!=null){
+            MerchantDto validatedMerchant = merchantValidator.validate(transaction.getMerchant());
+            if (validatedMerchant.getMerchantStatus().equals(MerchantStatus.ACTIVE.name())){
+                return transaction;
+            }
         }
         transaction.setStatus(TransactionStatus.ERROR.name());
         return transaction;

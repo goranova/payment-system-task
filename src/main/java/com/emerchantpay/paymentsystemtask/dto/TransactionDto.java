@@ -11,7 +11,9 @@ public class TransactionDto {
     private Double amount;
     private String referenceIdentifier;
 
-    private Merchant merchant;
+    private MerchantDto merchant;
+
+    private String timestamp ;
 
     public String getUuid() {
         return uuid;
@@ -41,7 +43,7 @@ public class TransactionDto {
         return referenceIdentifier;
     }
 
-    public Merchant getMerchant(){
+    public MerchantDto getMerchant(){
         return merchant;
     }
 
@@ -72,8 +74,12 @@ public class TransactionDto {
         this.referenceIdentifier = referenceIdentifier;
     }
 
-    public void setMerchant(Merchant merchant){
+    public void setMerchant(MerchantDto merchant){
         this.merchant = merchant;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
 }
