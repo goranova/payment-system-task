@@ -7,7 +7,10 @@ import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionVali
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-
+/*ChainHandler is usded to define chains for Transaction Transitions
+* Authorize->Charge->Refund
+* Authorize->Reversal
+* */
 public abstract class  ChainHandler {
     @Autowired
     AuthorizeHandler authorize;

@@ -6,10 +6,7 @@ import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
-import com.emerchantpay.paymentsystemtask.model.Merchant;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
-import com.emerchantpay.paymentsystemtask.validation.transaction.RefundValidator;
-import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

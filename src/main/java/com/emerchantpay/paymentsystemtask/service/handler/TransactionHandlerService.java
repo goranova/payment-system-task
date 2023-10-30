@@ -14,6 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+* TransactionHandlerService set appropriate chain
+* Authorize->Charge->Refund or
+* Authorize->Reversal
+* for transaction according to its type
+* and process transaction.
+* */
+
 @Service
 public class TransactionHandlerService {
     @Autowired
