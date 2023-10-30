@@ -1,7 +1,6 @@
 package com.emerchantpay.paymentsystemtask.controller;
 
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
-import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
