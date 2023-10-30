@@ -47,9 +47,9 @@ public class MerchantService {
             MerchantValidator validator = new MerchantValidator();
             MerchantDto editedValidMerchant = validator.validate(editedMerchant);
 
-            if (!editedMerchant.equals(editedValidMerchant)) {
+            if (!editedValidMerchant.equals(existingMerchant)) {
                 existingMerchant.setEmail(editedValidMerchant.getEmail());
-                existingMerchant.setDescription(editedValidMerchant.getEmail());
+                existingMerchant.setDescription(editedValidMerchant.getDescription());
                 existingMerchant.setMerchantStatus(editedValidMerchant.getMerchantStatus());
                 merchantRep.save(MerchantConverter.convertToMerchant(existingMerchant));
                 return true;
