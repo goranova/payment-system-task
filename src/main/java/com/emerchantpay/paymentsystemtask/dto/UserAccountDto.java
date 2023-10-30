@@ -13,13 +13,13 @@ public class UserAccountDto implements UserDetails {
 
     private UserAccount user;
 
-    public UserAccountDto(UserAccount user) {
+    public UserAccountDto(UserAccount user ) {
         this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole());
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_"+user.getRole());
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(simpleGrantedAuthority);
         return authorityList;
@@ -37,17 +37,17 @@ public class UserAccountDto implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

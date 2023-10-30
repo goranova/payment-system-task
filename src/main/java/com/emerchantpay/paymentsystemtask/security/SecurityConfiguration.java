@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -41,11 +42,15 @@ public class SecurityConfiguration {
 		AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 		httpSecurity.csrf(csrf -> csrf.disable()).
 		authorizeHttpRequests(authz -> authz
-				.requestMatchers("/payments").permitAll()
-				.requestMatchers("/merchants/**").hasAuthority("ADMIN")
-				.requestMatchers("/transaction/**").hasAuthority("ADMIN"))
+				.requestMatchers("/payments").authenticated()
+				.requestMatchers("/alerts/**").hasAuthority("ROLE_ADMIN")
+				.requestMatchers("/merchants/**").hasAuthority("ROLE_ADMIN")
+				.requestMatchers("/transaction/**").hasAuthority("ROLE_ADMIN"))
+
 				.authenticationManager(authenticationManager)
-				.httpBasic(Customizer.withDefaults());
+				.httpBasic(Customizer.withDefaults())
+				.sessionManagement(ss-> ss.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		;
 
 		return httpSecurity.build();
 	}
