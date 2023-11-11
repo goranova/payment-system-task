@@ -36,8 +36,8 @@ public class TransactionHandlerService {
         Map<TransactionType, ChainHandler> chains = new HashMap<>();
         List<TransactionDto> handledTransaction = new ArrayList<>();
 
-        chains.put(TransactionType.AUTHORIZE,authChain);
-        chains.put(TransactionType.CHARGE,authChain);
+        chains.put(TransactionType.AUTHORIZE, authChain);
+        chains.put(TransactionType.CHARGE, authChain);
         chains.put(TransactionType.REFUND, authChain);
         chains.put(TransactionType.REVERSAL, reversalChain);
         transactions.forEach(tr->{
@@ -54,13 +54,7 @@ public class TransactionHandlerService {
 
     }
 
-    public List<TransactionDto> getAllTransactions() {
-        List<TransactionDto> transactionDto = new ArrayList<>();
-        transactionDto.addAll(service.findAuthorizeTransactions());
-        transactionDto.addAll(service.findChargeTransactions());
-        transactionDto.addAll(service.findRefundTransactions());
-        transactionDto.addAll(service.findReversalTransactions());
-        return transactionDto;
+    public List<TransactionDto> findTransactions() {
+        return service.findTransactions();
     }
-
 }

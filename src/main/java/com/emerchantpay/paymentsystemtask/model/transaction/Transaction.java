@@ -17,7 +17,8 @@ public class Transaction implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "STATUS")
     private TransactionStatus status;
-
+    @Column(name = "AMOUNT")
+    private Double amount;
     @Column(name="TYPE", insertable = false, updatable = false)
     private String transactionType;
     @Column(name = "CUSTOMER_EMAIL")
@@ -37,7 +38,6 @@ public class Transaction implements Serializable {
     public Transaction() {
     }
 
-
     public String getUuid() {
         return uuid;
     }
@@ -50,6 +50,14 @@ public class Transaction implements Serializable {
 
     public void setStatus(TransactionStatus status) {
         this.status = status;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public String getTransactionType() {
@@ -95,6 +103,5 @@ public class Transaction implements Serializable {
     public Timestamp getTimestamp() {
         return timestamp;
     }
-
 
 }

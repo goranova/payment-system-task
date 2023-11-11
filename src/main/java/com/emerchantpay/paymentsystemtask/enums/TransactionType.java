@@ -5,6 +5,7 @@ import java.util.Optional;
 
 public enum TransactionType {
     AUTHORIZE("Authorize"),
+
     CHARGE("Charge"),
 
     REFUND("Refund"),
@@ -25,7 +26,5 @@ public enum TransactionType {
         return Arrays.stream(TransactionType.values())
                 .filter(trans -> trans.getName().equalsIgnoreCase(value)).findFirst();
     }
-
-
 
 }

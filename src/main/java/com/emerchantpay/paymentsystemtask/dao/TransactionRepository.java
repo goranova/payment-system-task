@@ -3,7 +3,6 @@ package com.emerchantpay.paymentsystemtask.dao;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.model.transaction.AuthorizeTransaction;
 import com.emerchantpay.paymentsystemtask.model.transaction.ChargeTransaction;
-import com.emerchantpay.paymentsystemtask.model.transaction.RefundTransaction;
 import com.emerchantpay.paymentsystemtask.model.transaction.Transaction;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,11 +16,8 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
-    @Query("select authorize from AuthorizeTransaction authorize")
-    List<AuthorizeTransaction> findAuthorizeTransactions();
-
-    @Query("select charge from ChargeTransaction charge")
-    List<ChargeTransaction> findChargeTransactions();
+    @Query("select transaction from Transaction transaction")
+    List<Transaction> findTransactions();
 
     @Query("select charge from ChargeTransaction charge " +
             "where charge.referenceIdentifier=:referenceIdentifier " +
@@ -36,12 +32,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     AuthorizeTransaction findAuthorizeTransactionByRefId(
             @Param("referenceIdentifier")String referenceIdentifier,
             @Param("status") TransactionStatus status);
-
-    @Query("select refund from RefundTransaction refund")
-    List<RefundTransaction> findRefundTransactions();
-
-    @Query("select reversal from ReversalTransaction reversal")
-    List<RefundTransaction> findReversalTransactions();
 
     @Modifying
     @Transactional

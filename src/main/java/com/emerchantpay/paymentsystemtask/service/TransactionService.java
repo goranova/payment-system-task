@@ -4,10 +4,7 @@ import com.emerchantpay.paymentsystemtask.dao.TransactionRepository;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
-import com.emerchantpay.paymentsystemtask.model.transaction.AuthorizeTransaction;
-import com.emerchantpay.paymentsystemtask.model.transaction.ChargeTransaction;
-import com.emerchantpay.paymentsystemtask.model.transaction.RefundTransaction;
-import com.emerchantpay.paymentsystemtask.model.transaction.ReversalTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,42 +18,21 @@ public class TransactionService {
     private TransactionRepository trans;
 
 
-    public TransactionDto saveTransaction(AuthorizeTransaction auth) {
-        trans.save(auth);
-        return TransactionConverter.convertToTransactionDto(auth);
-    }
-
-    public TransactionDto saveTransaction(ChargeTransaction charge) {
-        trans.save(charge);
-        return TransactionConverter.convertToTransactionDto(charge);
-    }
-
-    public TransactionDto saveTransaction(RefundTransaction refund) {
-        trans.save(refund);
-        return TransactionConverter.convertToTransactionDto(refund);
-    }
-
-    public TransactionDto saveTransaction(ReversalTransaction reversal) {
-        trans.save(reversal);
-        return TransactionConverter.convertToTransactionDto(reversal);
+    public TransactionDto saveTransaction(Transaction transaction) {
+        Transaction savedTrans = trans.save(transaction);
+        return TransactionConverter.convertToTransactionDto(savedTrans);
     }
 
 
-    public List<TransactionDto> findAuthorizeTransactions() {
-        List<AuthorizeTransaction> auth = trans.findAuthorizeTransactions();
+
+    public List<TransactionDto> findTransactions() {
+        List<Transaction> auth = trans.findTransactions();
         return auth.stream()
                 .map(TransactionConverter::convertToTransactionDto)
                 .collect(Collectors.toList());
 
     }
 
-    public List<TransactionDto> findChargeTransactions() {
-        List<ChargeTransaction> charge = trans.findChargeTransactions();
-        return charge.stream()
-                .map(TransactionConverter::convertToTransactionDto)
-                .collect(Collectors.toList());
-
-    }
 
     public TransactionDto findChargeTransactionByRefId(String referenceId, TransactionStatus status) {
         ChargeTransaction charge = trans.findChargeTransactionByRefId(referenceId, status);
@@ -75,24 +51,6 @@ public class TransactionService {
             return transaction;
         }
         return  null;
-    }
-
-
-    public List<TransactionDto> findRefundTransactions() {
-        List<RefundTransaction> refund = trans.findRefundTransactions();
-        return refund.stream()
-                .map(TransactionConverter::convertToTransactionDto)
-                .collect(Collectors.toList());
-
-    }
-
-
-    public List<TransactionDto> findReversalTransactions() {
-        List<RefundTransaction> reversal = trans.findReversalTransactions();
-        return reversal.stream()
-                .map(TransactionConverter::convertToTransactionDto)
-                .collect(Collectors.toList());
-
     }
 
     public void deleteTransOlderThanHour(Timestamp timestamp){
