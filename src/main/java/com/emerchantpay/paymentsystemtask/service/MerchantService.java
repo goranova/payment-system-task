@@ -4,21 +4,18 @@ import com.emerchantpay.paymentsystemtask.dao.MerchantRepository;
 import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
-import com.emerchantpay.paymentsystemtask.service.handler.TransactionHandlerService;
 import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MerchantService {
+
     @Autowired
     MerchantRepository merchantRep;
-    @Autowired
-    TransactionHandlerService trHandlerService;
 
 
     public List<MerchantDto> findAllMerchants() {
@@ -38,7 +35,7 @@ public class MerchantService {
         if (!merchant.isEmpty()) {
             return MerchantConverter.convertToMerchantDto(merchant.get());
         }
-        return new MerchantDto();
+        return null;
     }
 
     public boolean editMerchant(MerchantDto existingMerchant, MerchantDto editedMerchant) {
@@ -58,28 +55,12 @@ public class MerchantService {
         return false;
     }
 
-    public List<MerchantDto> saveMerchants(List<MerchantDto> merchantsDto) {
-        List<MerchantDto> merchantDtos = new ArrayList<>();
-        for (MerchantDto mr : merchantsDto) {
-
-            MerchantValidator validator = new MerchantValidator();
-            MerchantDto validMerchant = validator.validate(mr);
-
-            Merchant savedMerchant = merchantRep.save(MerchantConverter.convertToMerchant(validMerchant));
-            MerchantDto savedMerchantDto = MerchantConverter.convertToMerchantDto(savedMerchant);
-            merchantDtos.add(MerchantConverter.convertToMerchantDto(savedMerchant));
-
-            if (!mr.getTransactions().isEmpty()) {
-                mr.getTransactions().stream()
-                        .forEach(tr -> tr.setMerchant(savedMerchantDto));
-                trHandlerService.handleTransactionChain(mr.getTransactions());
-            }
-        }
-
-        return merchantDtos;
+    public MerchantDto save(Merchant merchant) {
+        merchantRep.save(merchant);
+        return MerchantConverter.convertToMerchantDto(merchant);
     }
 
-    public void deleteMerchant(MerchantDto merchantDto){
+    public void deleteMerchant(MerchantDto merchantDto) {
         merchantRep.delete(MerchantConverter.convertToMerchant(merchantDto));
     }
 }

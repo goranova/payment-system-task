@@ -6,8 +6,6 @@ import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
-import com.emerchantpay.paymentsystemtask.validation.transaction.ReversalValidator;
-import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +33,7 @@ public class ReversalHandler extends TransactionHandler {
 
                     updateReferencedAuthTransaction(authTransaction);
                     TransactionDto savedReversalTransaction =
-                            service.saveTransaction(TransactionConverter.convertToReversal(reversalTrans));
+                            service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));
                     transactions.add(savedReversalTransaction);
                 }
 
@@ -55,7 +53,7 @@ public class ReversalHandler extends TransactionHandler {
     public void updateReferencedAuthTransaction(TransactionDto authTransaction) {
 
         authTransaction.setStatus(TransactionStatus.REVERSED.name());
-        service.saveTransaction(TransactionConverter.convertToAuthorize(authTransaction));
+        service.saveTransaction(TransactionConverter.convertToTransaction(authTransaction));
     }
 
 }

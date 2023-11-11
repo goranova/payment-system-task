@@ -1,26 +1,22 @@
 package com.emerchantpay.paymentsystemtask.validation.transaction;
 
-import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
-import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
-import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
-import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.UUID;
 
+
 public interface TransactionValidator {
 
-    default TransactionDto validate(TransactionDto transaction) {
+     default TransactionDto validate(TransactionDto transaction) {
         validateUuid(transaction);
         validateStatus(transaction);
         validateEmail(transaction);
         validateAmount(transaction);
-        validateMerchant(transaction);
         return transaction;
-    }
+     }
 
     TransactionDto validateTransaction(TransactionDto transactionDto);
 
@@ -32,7 +28,7 @@ public interface TransactionValidator {
         }
         return transactionDto;
     }
-    default  TransactionDto validateUuid(TransactionDto transaction){
+    default TransactionDto validateUuid(TransactionDto transaction){
         if(transaction.getUuid()!=null){
             String validUuid = UUID.fromString(transaction.getUuid()).toString();
             if (validUuid!=null && validUuid.equals(transaction.getUuid()) ){
@@ -65,19 +61,6 @@ public interface TransactionValidator {
     default TransactionDto validateReferenceId(TransactionDto transaction){
         if(transaction.getReferenceIdentifier()!=null) {
             return transaction;
-        }
-        transaction.setStatus(TransactionStatus.ERROR.name());
-        return transaction;
-    }
-
-    default  TransactionDto validateMerchant(TransactionDto transaction) {
-
-        MerchantValidator merchantValidator = new MerchantValidator();
-        if(transaction.getMerchant()!=null){
-            MerchantDto validatedMerchant = merchantValidator.validate(transaction.getMerchant());
-            if (validatedMerchant.getMerchantStatus().equals(MerchantStatus.ACTIVE.name())){
-                return transaction;
-            }
         }
         transaction.setStatus(TransactionStatus.ERROR.name());
         return transaction;

@@ -35,7 +35,7 @@ public class RefundHandler extends TransactionHandler {
 
                     updateReferencedChargeTransaction(chargeTransaction, refundTrans);
                     TransactionDto savedRefundTransaction =
-                            service.saveTransaction(TransactionConverter.convertToRefund(refundTrans));
+                            service.saveTransaction(TransactionConverter.convertToTransaction(refundTrans));
                     transactions.add(savedRefundTransaction);
                 }
             }
@@ -59,7 +59,7 @@ public class RefundHandler extends TransactionHandler {
 
             updateMerchantTotalAmount(refundTransaction, chargeTransaction.getMerchant());
             chargeTransaction.setStatus(TransactionStatus.REFUNDED.name());
-            service.saveTransaction(TransactionConverter.convertToCharge(chargeTransaction));
+            service.saveTransaction(TransactionConverter.convertToTransaction(chargeTransaction));
 
         }
     }

@@ -1,11 +1,9 @@
 package com.emerchantpay.paymentsystemtask.service.handler;
 
-import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
-import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +25,11 @@ public class AuthorizeHandler extends TransactionHandler {
         if (transaction.getTransactionType().equals(TransactionType.AUTHORIZE.getName())) {
 
             TransactionDto savedAuthTransaction =
-                    trService.saveTransaction(TransactionConverter.convertToAuthorize(transaction));
+                    trService.saveTransaction(TransactionConverter.convertToTransaction(transaction));
             transactions.add(savedAuthTransaction);
 
-            if (transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
-                TransactionDto chargeTransaction = createChargedTransaction(transaction);
+            if (savedAuthTransaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
+                TransactionDto chargeTransaction = createChargedTransaction(savedAuthTransaction);
                 if (this.nextTransition != null) {
                     transactions.addAll(nextTransition.handleTransaction(chargeTransaction));
                 }
@@ -47,6 +45,7 @@ public class AuthorizeHandler extends TransactionHandler {
     }
 
     public TransactionDto createChargedTransaction(TransactionDto dto) {
+
         TransactionDto transaction = new TransactionDto();
         transaction.setUuid(TransactionUtils.generateRandomUuid());
         transaction.setTransactionType(TransactionType.CHARGE.getName());

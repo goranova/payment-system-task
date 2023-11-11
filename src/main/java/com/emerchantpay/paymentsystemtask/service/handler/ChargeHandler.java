@@ -5,11 +5,8 @@ import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
-import com.emerchantpay.paymentsystemtask.model.Merchant;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
-import com.emerchantpay.paymentsystemtask.validation.transaction.ChargeValidator;
-import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +25,7 @@ public class ChargeHandler extends TransactionHandler {
             if(transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
 
                 updateMerchantTotalAmount(transaction);
-                TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToCharge(transaction));
+                TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToTransaction(transaction));
                 transactions.add(savedChargeTransaction);
                 return transactions;
 

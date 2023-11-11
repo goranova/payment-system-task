@@ -1,7 +1,5 @@
 package com.emerchantpay.paymentsystemtask.enums;
 
-import com.emerchantpay.paymentsystemtask.model.Merchant;
-
 public enum MerchantStatus {
 
     ACTIVE("ACTIVE"),

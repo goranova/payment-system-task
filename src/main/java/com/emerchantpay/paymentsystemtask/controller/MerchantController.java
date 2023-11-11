@@ -2,6 +2,7 @@ package com.emerchantpay.paymentsystemtask.controller;
 
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
+import com.emerchantpay.paymentsystemtask.service.TransactionMerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,9 @@ public class MerchantController {
 
     @Autowired
     MerchantService merchantService;
+
+    @Autowired
+    TransactionMerchantService merTransService;
 
     @GetMapping("/display")
     public ModelAndView findAllMerchants() {
@@ -75,7 +79,7 @@ public class MerchantController {
     }
     @PostMapping("/importMerchants")
     public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants){
-        return merchantService.saveMerchants(merchants);
+        return merTransService.saveMerchants(merchants);
     }
 
     @ModelAttribute("existingMerchant")

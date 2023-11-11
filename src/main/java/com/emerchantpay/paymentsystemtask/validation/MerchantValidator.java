@@ -4,8 +4,8 @@ import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import org.apache.commons.validator.routines.EmailValidator;
 
-public class MerchantValidator {
 
+public class MerchantValidator {
 
     public MerchantDto validate(MerchantDto merchantDto) {
         validateEmail(merchantDto);
