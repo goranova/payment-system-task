@@ -1,7 +1,7 @@
 package com.emerchantpay.paymentsystemtask.controller;
 
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
-import com.emerchantpay.paymentsystemtask.error.MissingMerchantException;
+import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.service.TransactionMerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class TransactionController {
         return modelAndView;
     }
     @PostMapping("/importTransaction")
-    public List<TransactionDto> importTransactions(@RequestBody List<TransactionDto> trans) throws MissingMerchantException {
+    public List<TransactionDto> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException {
        return transMerService.handleTransactionChain(trans);
 
     }

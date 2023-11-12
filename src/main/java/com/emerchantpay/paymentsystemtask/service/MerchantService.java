@@ -3,6 +3,7 @@ package com.emerchantpay.paymentsystemtask.service;
 import com.emerchantpay.paymentsystemtask.dao.MerchantRepository;
 import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
+import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
 import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class MerchantService {
         return null;
     }
 
-    public boolean editMerchant(MerchantDto existingMerchant, MerchantDto editedMerchant) {
+    public boolean editMerchant(MerchantDto existingMerchant, MerchantDto editedMerchant) throws MerchantException {
         if (existingMerchant != null && editedMerchant != null) {
 
             MerchantValidator validator = new MerchantValidator();

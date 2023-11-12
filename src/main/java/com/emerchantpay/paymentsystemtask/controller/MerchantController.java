@@ -1,6 +1,7 @@
 package com.emerchantpay.paymentsystemtask.controller;
 
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
+import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import com.emerchantpay.paymentsystemtask.service.TransactionMerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class MerchantController {
     @PostMapping("/save")
     public ModelAndView saveMerchant( @SessionAttribute("existingMerchant") MerchantDto existingMerchant,
                                       MerchantDto editedMerchant,
-                                      ModelAndView modelAndView) {
+                                      ModelAndView modelAndView) throws MerchantException {
        boolean isEdited = merchantService.editMerchant(existingMerchant,editedMerchant);
        if(isEdited){
            modelAndView.setViewName("redirect:/alerts/successAlert");
@@ -78,7 +79,7 @@ public class MerchantController {
 
     }
     @PostMapping("/importMerchants")
-    public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants){
+    public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants) throws MerchantException {
         return merTransService.saveMerchants(merchants);
     }
 
