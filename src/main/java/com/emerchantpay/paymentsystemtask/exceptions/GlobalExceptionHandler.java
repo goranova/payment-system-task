@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler({MerchantException.class})
-    public ResponseEntity<Object> handleMissingMerchantException(MerchantException exception) {
+    public ResponseEntity<Object> handleMerchantException(MerchantException exception) {
 
         log.error(exception.getMessage(), exception);
 
@@ -22,6 +22,15 @@ public class GlobalExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler({TransactionException.class})
+    public ResponseEntity<Object> handleTransactionException(TransactionException exception) {
+
+        log.error(exception.getMessage(), exception);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleException(Exception exception) {
 

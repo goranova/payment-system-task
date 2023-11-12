@@ -1,6 +1,7 @@
 package com.emerchantpay.paymentsystemtask.service.handler.chain;
 
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
+import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.handler.AuthorizeHandler;
 import com.emerchantpay.paymentsystemtask.validation.transaction.AuthorizeValidator;
 import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
@@ -17,10 +18,8 @@ public abstract class  ChainHandler {
 
    public abstract void  setChain();
 
-    public List<TransactionDto> handleTransaction(TransactionDto dto) {
-        TransactionValidator validator = new AuthorizeValidator();
-        TransactionDto validatedTransaction = validator.validateTransaction(dto);
-        return authorize.handleTransaction(validatedTransaction);
+    public List<TransactionDto> handleTransaction(TransactionDto transaction) {
+        return authorize.handleTransaction(transaction);
     }
 
 }

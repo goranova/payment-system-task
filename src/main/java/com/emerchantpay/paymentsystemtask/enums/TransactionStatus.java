@@ -6,9 +6,13 @@ public enum TransactionStatus {
     REFUNDED("REFUNDED"),
     ERROR("ERROR");
 
-    private String value;
-    TransactionStatus(String value){
-        this.value=value;
+    private String name;
+    TransactionStatus(String name){
+        this.name=name;
+    }
+
+    public String getName(){
+        return name;
     }
 
 }

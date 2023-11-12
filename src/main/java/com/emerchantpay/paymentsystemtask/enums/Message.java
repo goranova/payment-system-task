@@ -8,11 +8,16 @@ public enum Message {
 
 
     MISSING_MERCHANT("missing.merchant"),
+
     INACTIVE_MERCHANT("inactive.merchant"),
 
     INVALID_EMAIL("invalid.email"),
 
-    INVALID_TRANSACTION_SUM("invalid.transaction.sum");
+    INVALID_TRANSACTION_SUM("invalid.transaction.sum"),
+
+    INVALID_TRANSACTION_STATUS("invalid.trans.status"),
+
+    UNSUPPORTED_TRANSACTION_TYPE("unsupported.transaction.type");
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",
             Locale.ENGLISH);

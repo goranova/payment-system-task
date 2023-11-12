@@ -17,14 +17,15 @@ public class MerchantValidator {
     }
 
     public MerchantDto validateStatus(MerchantDto merchantDto) throws MerchantException {
+
         if(merchantDto==null){
             throw new MerchantException(Message.MISSING_MERCHANT.getName());
         }
 
         if( merchantDto.getMerchantStatus().equals(MerchantStatus.INACTIVE.name() )
-                && !merchantDto.getTransactions().isEmpty())
-              throw new MerchantException(Message.INACTIVE_MERCHANT.getName());
-
+                && !merchantDto.getTransactions().isEmpty()) {
+            throw new MerchantException(Message.INACTIVE_MERCHANT.getName());
+        }
         return merchantDto;
     }
 
