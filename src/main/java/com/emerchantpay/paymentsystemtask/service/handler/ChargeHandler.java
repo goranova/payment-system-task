@@ -5,6 +5,7 @@ import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
+import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,30 +17,41 @@ import java.util.List;
 public class ChargeHandler extends TransactionHandler {
     @Autowired
     TransactionService service;
+
     @Override
-    public List<TransactionDto> handleTransaction(TransactionDto transaction) {
+    public List<TransactionDto> handleTransaction(TransactionDto transaction) throws TransactionException {
         List<TransactionDto> transactions = new ArrayList<>();
 
         if (transaction.getTransactionType().equals(TransactionType.CHARGE.getName())) {
 
-            if(transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
+            TransactionDto authTransaction = null;
+            if(!transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
+                authTransaction =
+                        service.findAuthorizeTransactionByRefId(transaction.getReferenceIdentifier(), TransactionStatus.APPROVED);
 
-                updateMerchantTotalAmount(transaction);
-                TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToTransaction(transaction));
-                transactions.add(savedChargeTransaction);
-                return transactions;
-
-            } else{
-                if(transaction.getStatus().equals(TransactionStatus.REFUNDED.name())){
-
-                    TransactionDto refundTransaction = createRefundTransaction(transaction);
-                    if (this.nextTransition != null) {
-                        transactions.addAll(nextTransition.handleTransaction(refundTransaction));
-                    }
-                    return transactions;
+                if(authTransaction==null){
+                    transaction.setStatus(TransactionStatus.ERROR.getName());
+                    transaction.setReferenceIdentifier(null);
                 }
             }
+            if(transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
+                if( authTransaction.getMerchant()!=null
+                        && authTransaction.getMerchant().equals(transaction.getMerchant() )) {
 
+                    updateMerchantTotalAmount(transaction, authTransaction.getMerchant());
+                }
+            }
+            if(transaction.getStatus().equals(TransactionStatus.REFUNDED.name())){
+
+                TransactionDto refundTransaction = createRefundTransaction(transaction);
+                if (this.nextTransition != null) {
+                    transactions.addAll(nextTransition.handleTransaction(refundTransaction));
+                }
+                return transactions;
+            }
+            TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToTransaction(transaction));
+            transactions.add(savedChargeTransaction);
+            return transactions;
         } else {
             if (this.nextTransition != null) {
                 return nextTransition.handleTransaction(transaction);
@@ -48,7 +60,7 @@ public class ChargeHandler extends TransactionHandler {
         return transactions;
     }
 
-    public TransactionDto createRefundTransaction(TransactionDto dto) {
+    private TransactionDto createRefundTransaction(TransactionDto dto) {
         TransactionDto transaction = new TransactionDto();
         transaction.setUuid(TransactionUtils.generateRandomUuid());
         transaction.setTransactionType(TransactionType.REFUND.getName());
@@ -61,13 +73,10 @@ public class ChargeHandler extends TransactionHandler {
         return transaction;
     }
 
-    public void updateMerchantTotalAmount(TransactionDto transaction){
+    private void updateMerchantTotalAmount(TransactionDto transaction, MerchantDto merchant){
 
-        MerchantDto merchant = transaction.getMerchant();
         Double amount = merchant.getTotalTransactionSum() + transaction.getAmount();
         merchant.setTotalTransactionSum(amount);
         transaction.setMerchant(merchant);
-
-
     }
 }

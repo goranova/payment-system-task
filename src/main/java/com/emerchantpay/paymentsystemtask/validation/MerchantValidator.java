@@ -10,6 +10,10 @@ import org.apache.commons.validator.routines.EmailValidator;
 public class MerchantValidator {
 
     public MerchantDto validate(MerchantDto merchantDto) throws MerchantException {
+
+        if(merchantDto==null){
+            throw new MerchantException(Message.MISSING_MERCHANT.getName());
+        }
         validateEmail(merchantDto);
         validateStatus(merchantDto);
         validateTotalTrSum(merchantDto);
@@ -17,10 +21,6 @@ public class MerchantValidator {
     }
 
     public MerchantDto validateStatus(MerchantDto merchantDto) throws MerchantException {
-
-        if(merchantDto==null){
-            throw new MerchantException(Message.MISSING_MERCHANT.getName());
-        }
 
         if( merchantDto.getMerchantStatus().equals(MerchantStatus.INACTIVE.name() )
                 && !merchantDto.getTransactions().isEmpty()) {
@@ -30,6 +30,7 @@ public class MerchantValidator {
     }
 
     public MerchantDto validateEmail(MerchantDto merchantDto) throws MerchantException {
+
         boolean isValid = EmailValidator.getInstance().isValid(merchantDto.getEmail());
         if (!isValid) {
             throw new MerchantException(Message.INVALID_EMAIL.getName(), merchantDto.getEmail());

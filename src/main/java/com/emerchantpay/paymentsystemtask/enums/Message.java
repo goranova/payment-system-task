@@ -17,7 +17,13 @@ public enum Message {
 
     INVALID_TRANSACTION_STATUS("invalid.trans.status"),
 
-    UNSUPPORTED_TRANSACTION_TYPE("unsupported.transaction.type");
+    UNSUPPORTED_TRANSACTION_TYPE("unsupported.transaction.type"),
+
+    MISSING_TRANSACTION("missing.transaction"),
+
+    MISSING_TRANS_REFERENCE_IDENTIFIER("missing.trans.reference.identifier"),
+
+    MULTIPLE_CHARGE_TRANSACTION("multiple.charge.trans");
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",
             Locale.ENGLISH);

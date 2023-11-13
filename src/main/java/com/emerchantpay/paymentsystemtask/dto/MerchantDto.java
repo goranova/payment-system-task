@@ -67,7 +67,6 @@ public class MerchantDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MerchantDto that)) return false;
-        if(getDescription().isEmpty() || getEmail().isEmpty() || getMerchantStatus().isEmpty()) return true;
         return  Objects.equals(getDescription(), that.getDescription()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getMerchantStatus(), that.getMerchantStatus());
     }
 

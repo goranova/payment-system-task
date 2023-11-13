@@ -1,7 +1,6 @@
 package com.emerchantpay.paymentsystemtask.validation.transaction;
 
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
-import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
@@ -9,13 +8,12 @@ import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 public class AuthorizeValidator implements TransactionValidator {
 
     @Override
-    public TransactionDto validateStatus(TransactionDto transaction) throws TransactionException {
-        if (!transaction.getStatus().equals(TransactionStatus.APPROVED.name())
-                && !transaction.getStatus().equals(TransactionStatus.REVERSED.name())
-                && !transaction.getStatus().equals(TransactionStatus.ERROR.name())) {
+    public TransactionDto validateStatus(TransactionDto transaction) {
 
-            throw new TransactionException(Message.INVALID_TRANSACTION_STATUS.getName(),
-                    transaction.getStatus(), transaction.getTransactionType());
+        if (transaction.getStatus().equals(TransactionStatus.REFUNDED.getName())) {
+            transaction.setStatus(TransactionStatus.ERROR.getName());
+            log.info(String.format("Transaction status is set to error. " +
+                    "%s status is not allowed for %s transaction",transaction.getStatus(),transaction.getTransactionType()));
         }
         return transaction;
     }
@@ -26,4 +24,10 @@ public class AuthorizeValidator implements TransactionValidator {
         }else return new ChargeValidator().validateTransaction(transaction);
     }
 
+    public TransactionDto validateReferenceId(TransactionDto transaction){
+        if(transaction.getReferenceIdentifier()!=null){
+            transaction.setReferenceIdentifier(null);
+        }
+        return transaction;
+    }
 }

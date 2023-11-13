@@ -31,6 +31,7 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(exception.getMessage());
     }
+
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleException(Exception exception) {
 

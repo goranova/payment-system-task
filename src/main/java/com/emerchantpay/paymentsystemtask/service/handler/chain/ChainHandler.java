@@ -18,7 +18,7 @@ public abstract class  ChainHandler {
 
    public abstract void  setChain();
 
-    public List<TransactionDto> handleTransaction(TransactionDto transaction) {
+    public List<TransactionDto> handleTransaction(TransactionDto transaction) throws TransactionException {
         return authorize.handleTransaction(transaction);
     }
 

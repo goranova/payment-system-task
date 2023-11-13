@@ -6,33 +6,60 @@ import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 
 public interface TransactionValidator {
 
+    Log log = LogFactory.getLog(TransactionValidator.class);
+
      default TransactionDto validate(TransactionDto transaction) throws TransactionException {
+
+         if( transaction==null ){
+             throw new TransactionException(Message.MISSING_TRANSACTION.getName());
+         }
+
         validateUuid(transaction);
+        validateSupportedStatus(transaction);
         validateStatus(transaction);
         validateEmail(transaction);
         validateAmount(transaction);
+        validateReferenceId(transaction);
         return transaction;
      }
 
     TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException;
 
-    default TransactionDto validateStatus(TransactionDto transaction) throws TransactionException {
-        if (!transaction.getStatus().equals(TransactionStatus.APPROVED.name())
-                && !transaction.getStatus().equals(TransactionStatus.ERROR.name())) {
+     default TransactionDto validateSupportedStatus(TransactionDto transaction) throws TransactionException {
+         boolean isStatusNonMatch = Stream.of(TransactionStatus.values())
+                 .noneMatch(s->s.getName().equals(transaction.getStatus()));
 
-            throw new TransactionException(Message.INVALID_TRANSACTION_STATUS.getName(),
-                    transaction.getStatus(), transaction.getTransactionType());
+         if(transaction.getStatus()==null || isStatusNonMatch){
+             throw new TransactionException(Message.INVALID_TRANSACTION_STATUS.getName(),
+                     transaction.getStatus(), transaction.getTransactionType());
+         }
+         return transaction;
+     }
+
+    default TransactionDto validateStatus(TransactionDto transaction) {
+
+        if ( transaction.getStatus().equals(TransactionStatus.REVERSED.name())
+                || transaction.getStatus().equals(TransactionStatus.REFUNDED.name()) ) {
+
+           transaction.setStatus(TransactionStatus.ERROR.getName());
+           log.info(String.format("Transaction status is set to error. " +
+                    "%s status is not allowed for %s transaction",transaction.getStatus(),transaction.getTransactionType()));
         }
+
         return transaction;
     }
 
     default TransactionDto validateUuid(TransactionDto transaction){
+
         if(transaction.getUuid()!=null){
             String validUuid = UUID.fromString(transaction.getUuid()).toString();
             if (validUuid!=null && validUuid.equals(transaction.getUuid()) ){
@@ -44,12 +71,12 @@ public interface TransactionValidator {
         return transaction;
     }
 
-    default TransactionDto validateEmail(TransactionDto transaction){
+    default TransactionDto validateEmail(TransactionDto transaction) throws TransactionException {
+
         boolean isValid = EmailValidator.getInstance().isValid(transaction.getCustomerEmail());
-        if (isValid) {
-            return transaction;
+        if (!isValid) {
+            throw new TransactionException(Message.INVALID_EMAIL.getName(), transaction.getCustomerEmail());
         }
-        transaction.setCustomerEmail(null);
         return transaction;
 
     }
@@ -63,11 +90,17 @@ public interface TransactionValidator {
         return transaction;
     }
 
-    default TransactionDto validateReferenceId(TransactionDto transaction){
-        if(transaction.getReferenceIdentifier()!=null) {
-            return transaction;
+    default TransactionDto validateReferenceId(TransactionDto transaction) throws TransactionException {
+
+        if( transaction.getReferenceIdentifier()==null
+                && !transaction.getStatus().equals(TransactionStatus.ERROR.getName()) ) {
+            throw new TransactionException(Message.MISSING_TRANS_REFERENCE_IDENTIFIER.getName());
         }
-        transaction.setStatus(TransactionStatus.ERROR.name());
+        if(transaction.getReferenceIdentifier()!=null
+                && transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
+            transaction.setReferenceIdentifier(null);
+        }
+
         return transaction;
     }
 }

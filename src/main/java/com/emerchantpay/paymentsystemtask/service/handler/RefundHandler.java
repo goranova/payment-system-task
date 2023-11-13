@@ -3,9 +3,9 @@ package com.emerchantpay.paymentsystemtask.service.handler;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
-import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
+import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,27 +18,35 @@ public class RefundHandler extends TransactionHandler {
     @Autowired
     TransactionService service;
     @Override
-    public List<TransactionDto> handleTransaction(TransactionDto refundTrans) {
+    public List<TransactionDto> handleTransaction(TransactionDto refundTrans) throws TransactionException {
 
         List<TransactionDto> transactions = new ArrayList<>();
 
         if (refundTrans.getTransactionType().equals(TransactionType.REFUND.getName())) {
 
-            if(refundTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
+            TransactionDto chargeTransaction=null;
+            if(!refundTrans.getStatus().equals(TransactionStatus.ERROR.getName())){
 
-                TransactionDto chargeTransaction =
-                        service.findChargeTransactionByRefId(refundTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
+                 chargeTransaction =
+                         service.findChargeTransactionByRefId(refundTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
 
-                if (chargeTransaction != null
-                        && chargeTransaction.getMerchant()!=null
-                        && chargeTransaction.getMerchant().getMerchantStatus().equals(MerchantStatus.ACTIVE.name())) {
-
-                    updateReferencedChargeTransaction(chargeTransaction, refundTrans);
-                    TransactionDto savedRefundTransaction =
-                            service.saveTransaction(TransactionConverter.convertToTransaction(refundTrans));
-                    transactions.add(savedRefundTransaction);
+                if(chargeTransaction==null){
+                    refundTrans.setStatus(TransactionStatus.ERROR.getName());
+                    refundTrans.setReferenceIdentifier(null);
                 }
             }
+
+            if(refundTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
+
+                if ( chargeTransaction.getMerchant()!=null
+                        && chargeTransaction.getMerchant().equals(refundTrans.getMerchant())) {
+
+                    updateReferencedChargeTransaction(chargeTransaction, refundTrans);
+                }
+            }
+            TransactionDto savedRefundTransaction =
+                    service.saveTransaction(TransactionConverter.convertToTransaction(refundTrans));
+            transactions.add(savedRefundTransaction);
 
             return transactions;
 

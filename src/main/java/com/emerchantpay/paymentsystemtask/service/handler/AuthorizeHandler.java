@@ -4,6 +4,7 @@ import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
+import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class AuthorizeHandler extends TransactionHandler {
     TransactionService trService;
 
     @Override
-    public List<TransactionDto> handleTransaction(TransactionDto transaction) {
+    public List<TransactionDto> handleTransaction(TransactionDto transaction) throws TransactionException {
         List<TransactionDto> transactions = new ArrayList<>();
 
         if (transaction.getTransactionType().equals(TransactionType.AUTHORIZE.getName())) {

@@ -2,9 +2,9 @@ package com.emerchantpay.paymentsystemtask.service.handler;
 
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
-import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
+import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,27 +17,35 @@ public class ReversalHandler extends TransactionHandler {
     @Autowired
     TransactionService service;
     @Override
-    protected List<TransactionDto> handleTransaction(TransactionDto reversalTrans) {
+    protected List<TransactionDto> handleTransaction(TransactionDto reversalTrans) throws TransactionException {
 
         List<TransactionDto> transactions = new ArrayList<>();
 
         if (reversalTrans.getTransactionType().equals(TransactionType.REVERSAL.getName())) {
 
+            TransactionDto authTransaction = null;
+
+            if(!reversalTrans.getStatus().equals(TransactionStatus.ERROR.getName())){
+                authTransaction =
+                        service.findAuthorizeTransactionByRefId(reversalTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
+
+                if(authTransaction==null){
+                    reversalTrans.setStatus(TransactionStatus.ERROR.getName());
+                    reversalTrans.setReferenceIdentifier(null);
+                }
+            }
+
             if(reversalTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
 
-                TransactionDto authTransaction =
-                        service.findAuthorizeTransactionByRefId(reversalTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
-                if(authTransaction!=null
-                        && authTransaction.getMerchant()!=null
-                        && authTransaction.getMerchant().getMerchantStatus().equals(MerchantStatus.ACTIVE.name() )) {
+                if( authTransaction.getMerchant()!=null
+                        && authTransaction.getMerchant().equals(reversalTrans.getMerchant() )) {
 
                     updateReferencedAuthTransaction(authTransaction);
-                    TransactionDto savedReversalTransaction =
-                            service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));
-                    transactions.add(savedReversalTransaction);
                 }
-
             }
+            TransactionDto savedReversalTransaction =
+                    service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));
+            transactions.add(savedReversalTransaction);
 
 
             return transactions;

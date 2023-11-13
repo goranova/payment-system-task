@@ -22,7 +22,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     @Query("select charge from ChargeTransaction charge " +
             "where charge.referenceIdentifier=:referenceIdentifier " +
             "and charge.status=:status")
-    ChargeTransaction findChargeTransactionByRefId(
+    List<ChargeTransaction> findChargeTransactionByRefId(
             @Param("referenceIdentifier")String referenceIdentifier,
             @Param("status") TransactionStatus status);
 

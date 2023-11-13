@@ -9,10 +9,17 @@ public class ReversalValidator implements TransactionValidator {
 
     @Override
     public TransactionDto validate(TransactionDto transaction) throws TransactionException {
+
+        if( transaction==null ){
+            throw new TransactionException(Message.MISSING_TRANSACTION.getName());
+        }
+
         validateUuid(transaction);
+        validateSupportedStatus(transaction);
         validateStatus(transaction);
         validateEmail(transaction);
         validateReferenceId(transaction);
+
         return transaction;
     }
     public TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException {
