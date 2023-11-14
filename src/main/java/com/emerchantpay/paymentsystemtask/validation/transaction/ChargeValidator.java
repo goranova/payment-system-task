@@ -4,8 +4,6 @@ import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
 
 public class ChargeValidator implements TransactionValidator {
 
@@ -13,10 +11,9 @@ public class ChargeValidator implements TransactionValidator {
     public TransactionDto validateStatus(TransactionDto transaction)  {
         if (transaction.getStatus().equals(TransactionStatus.REVERSED.getName())) {
 
-            transaction.setStatus(TransactionStatus.ERROR.getName());
-            transaction.setReferenceIdentifier(null);
-            log.info(String.format("Transaction status is set to error. " +
+            log.info(String.format("Transaction status will be set to error. " +
                     "%s status is not allowed for %s transaction",transaction.getStatus(),transaction.getTransactionType()));
+            transaction.setStatus(TransactionStatus.ERROR.getName());
         }
         return transaction;
     }

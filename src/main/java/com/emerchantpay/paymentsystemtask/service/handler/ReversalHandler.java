@@ -27,7 +27,7 @@ public class ReversalHandler extends TransactionHandler {
 
             if(!reversalTrans.getStatus().equals(TransactionStatus.ERROR.getName())){
                 authTransaction =
-                        service.findAuthorizeTransactionByRefId(reversalTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
+                        service.findNonReferencedAuthTransByRefId(reversalTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
 
                 if(authTransaction==null){
                     reversalTrans.setStatus(TransactionStatus.ERROR.getName());

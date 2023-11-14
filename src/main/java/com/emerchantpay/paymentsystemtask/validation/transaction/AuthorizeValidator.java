@@ -11,9 +11,10 @@ public class AuthorizeValidator implements TransactionValidator {
     public TransactionDto validateStatus(TransactionDto transaction) {
 
         if (transaction.getStatus().equals(TransactionStatus.REFUNDED.getName())) {
-            transaction.setStatus(TransactionStatus.ERROR.getName());
-            log.info(String.format("Transaction status is set to error. " +
+
+            log.info(String.format("Transaction status will be set to error. " +
                     "%s status is not allowed for %s transaction",transaction.getStatus(),transaction.getTransactionType()));
+            transaction.setStatus(TransactionStatus.ERROR.getName());
         }
         return transaction;
     }

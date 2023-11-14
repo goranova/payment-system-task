@@ -27,7 +27,7 @@ public class ChargeHandler extends TransactionHandler {
             TransactionDto authTransaction = null;
             if(!transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
                 authTransaction =
-                        service.findAuthorizeTransactionByRefId(transaction.getReferenceIdentifier(), TransactionStatus.APPROVED);
+                        service.findNonReferencedAuthTransByRefId(transaction.getReferenceIdentifier(), TransactionStatus.APPROVED);
 
                 if(authTransaction==null){
                     transaction.setStatus(TransactionStatus.ERROR.getName());

@@ -39,7 +39,7 @@ public interface TransactionValidator {
                  .noneMatch(s->s.getName().equals(transaction.getStatus()));
 
          if(transaction.getStatus()==null || isStatusNonMatch){
-             throw new TransactionException(Message.INVALID_TRANSACTION_STATUS.getName(),
+             throw new TransactionException(Message.UNSUPPORTED_TRANSACTION_STATUS.getName(),
                      transaction.getStatus(), transaction.getTransactionType());
          }
          return transaction;
@@ -50,9 +50,10 @@ public interface TransactionValidator {
         if ( transaction.getStatus().equals(TransactionStatus.REVERSED.name())
                 || transaction.getStatus().equals(TransactionStatus.REFUNDED.name()) ) {
 
-           transaction.setStatus(TransactionStatus.ERROR.getName());
-           log.info(String.format("Transaction status is set to error. " +
+            log.info(String.format("Transaction status will be set to error. " +
                     "%s status is not allowed for %s transaction",transaction.getStatus(),transaction.getTransactionType()));
+            transaction.setStatus(TransactionStatus.ERROR.getName());
+
         }
 
         return transaction;

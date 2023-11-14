@@ -28,7 +28,7 @@ public class RefundHandler extends TransactionHandler {
             if(!refundTrans.getStatus().equals(TransactionStatus.ERROR.getName())){
 
                  chargeTransaction =
-                         service.findChargeTransactionByRefId(refundTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
+                         service.findNonRefundedChargeTransByRefId(refundTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
 
                 if(chargeTransaction==null){
                     refundTrans.setStatus(TransactionStatus.ERROR.getName());

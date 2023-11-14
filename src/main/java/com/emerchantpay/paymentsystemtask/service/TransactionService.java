@@ -5,8 +5,11 @@ import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
+import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
-import com.emerchantpay.paymentsystemtask.model.transaction.*;
+import com.emerchantpay.paymentsystemtask.model.transaction.AuthorizeTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.ChargeTransaction;
+import com.emerchantpay.paymentsystemtask.model.transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,27 +38,31 @@ public class TransactionService {
 
     }
 
+    public TransactionDto findNonRefundedChargeTransByRefId(String referenceId, TransactionStatus status) throws TransactionException {
 
-    public TransactionDto findChargeTransactionByRefId(String referenceId, TransactionStatus status) throws TransactionException {
-       List<ChargeTransaction> chargeTransactions = trans.findChargeTransactionByRefId(referenceId, status);
-       if(chargeTransactions.isEmpty()){
-           return null;
-       }
-       if(chargeTransactions.size()==1){
-           ChargeTransaction charge = chargeTransactions.stream().findFirst().get();
-           return TransactionConverter.convertToTransactionDto(charge);
-        }else{
-           throw new TransactionException(Message.MULTIPLE_CHARGE_TRANSACTION.getName(),referenceId);
+        boolean isRefundExists =
+                trans.existsByTransactionTypeAndReferenceIdentifier(TransactionType.REFUND.getName(),referenceId);
+        if(isRefundExists){
+            throw new TransactionException(Message.MULTIPLE_TRANSACTIONS.getName(), TransactionType.REFUND.getName(), referenceId);
         }
 
+       ChargeTransaction chargeTransaction = trans.findChargeTransactionByRefId(referenceId,status);
+       if(chargeTransaction!=null){
+           return TransactionConverter.convertToTransactionDto(chargeTransaction);
+       }
+       return null;
     }
 
-    public TransactionDto findAuthorizeTransactionByRefId(String referenceId, TransactionStatus status) {
+    public TransactionDto findNonReferencedAuthTransByRefId(String referenceId, TransactionStatus status) throws TransactionException {
 
-        AuthorizeTransaction auth = trans.findAuthorizeTransactionByRefId(referenceId, status);
+        boolean isChargeExists = trans.existsByTransactionTypeAndReferenceIdentifier(TransactionType.CHARGE.getName(),referenceId);
+        if(isChargeExists){
+            throw new TransactionException(Message.MULTIPLE_TRANSACTIONS.getName(), TransactionType.CHARGE.getName(), referenceId);
+        }
+
+        AuthorizeTransaction auth = trans.findAuthorizeTransactionByRefId(referenceId,status);
         if(auth!=null){
-            TransactionDto transaction = TransactionConverter.convertToTransactionDto(auth);
-            return transaction;
+            return TransactionConverter.convertToTransactionDto(auth);
         }
         return  null;
     }
