@@ -3,11 +3,13 @@ package com.emerchantpay.paymentsystemtask.service;
 import com.emerchantpay.paymentsystemtask.dao.MerchantRepository;
 import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
+import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
 import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +28,6 @@ public class MerchantService {
         return merchants.stream()
                 .map(MerchantConverter::convertToMerchantDto)
                 .toList();
-
-
     }
 
     public MerchantDto findById(String id) {
@@ -37,24 +37,18 @@ public class MerchantService {
         return merchant.map(MerchantConverter::convertToMerchantDto).orElse(null);
     }
 
-    public MerchantDto findExistingMerchant(MerchantDto merchant) throws MerchantException {
+    public MerchantDto findMerchantByDescrStatus(MerchantDto mer) {
 
-        if(merchant == null){
-            throw new MerchantException(Message.MISSING_MERCHANT.getName());
-        }
-        if(merchant.getIdentifier() != null){
-            MerchantDto existingMer = findById(String.valueOf(merchant.getIdentifier()));
-            if ( existingMer!=null ){
-               return existingMer;
-            }
-        }
-        return merchant;
+       Merchant exitingMer =
+               merchantRep.findMerchantByDescrStatus(mer.getDescription(), MerchantStatus.valueOf(mer.getMerchantStatus()));
+       if(exitingMer!=null) {
+           return MerchantConverter.convertToMerchantDto(exitingMer);
+       }
+       return mer;
     }
 
-
-
-
     public boolean editMerchant(MerchantDto existingMerchant, MerchantDto editedMerchant) throws MerchantException {
+
         if (existingMerchant != null && editedMerchant != null) {
 
             MerchantValidator validator = new MerchantValidator();
@@ -64,6 +58,7 @@ public class MerchantService {
                 existingMerchant.setEmail(editedValidMerchant.getEmail());
                 existingMerchant.setDescription(editedValidMerchant.getDescription());
                 existingMerchant.setMerchantStatus(editedValidMerchant.getMerchantStatus());
+                existingMerchant.setTotalTransactionSum(editedMerchant.getTotalTransactionSum());
                 merchantRep.save(MerchantConverter.convertToMerchant(existingMerchant));
                 return true;
             }

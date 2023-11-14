@@ -28,14 +28,11 @@ public class TransactionService {
         return TransactionConverter.convertToTransactionDto(savedTrans);
     }
 
-
-
     public List<TransactionDto> findTransactions() {
         List<Transaction> auth = trans.findTransactions();
         return auth.stream()
                 .map(TransactionConverter::convertToTransactionDto)
                 .collect(Collectors.toList());
-
     }
 
     public TransactionDto findNonRefundedChargeTransByRefId(String referenceId, TransactionStatus status) throws TransactionException {
@@ -55,7 +52,8 @@ public class TransactionService {
 
     public TransactionDto findNonReferencedAuthTransByRefId(String referenceId, TransactionStatus status) throws TransactionException {
 
-        boolean isChargeExists = trans.existsByTransactionTypeAndReferenceIdentifier(TransactionType.CHARGE.getName(),referenceId);
+        boolean isChargeExists =
+                trans.existsByTransactionTypeAndReferenceIdentifier(TransactionType.CHARGE.getName(),referenceId);
         if(isChargeExists){
             throw new TransactionException(Message.MULTIPLE_TRANSACTIONS.getName(), TransactionType.CHARGE.getName(), referenceId);
         }

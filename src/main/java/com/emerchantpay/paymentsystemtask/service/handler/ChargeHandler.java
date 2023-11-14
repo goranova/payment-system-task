@@ -8,6 +8,8 @@ import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 @Service
 public class ChargeHandler extends TransactionHandler {
+
+    Log log = LogFactory.getLog(this.getClass());
     @Autowired
     TransactionService service;
 
@@ -39,6 +43,10 @@ public class ChargeHandler extends TransactionHandler {
                         && authTransaction.getMerchant().equals(transaction.getMerchant() )) {
 
                     updateMerchantTotalAmount(transaction, authTransaction.getMerchant());
+                }else {
+                    log.warn("The merchants for Authorize and Charge transactions are different.");
+                    transaction.setStatus(TransactionStatus.ERROR.getName());
+                    transaction.setReferenceIdentifier(null);
                 }
             }
             if(transaction.getStatus().equals(TransactionStatus.REFUNDED.name())){

@@ -64,16 +64,18 @@ public class TransactionMerchantHandlerService {
     public List<MerchantDto> handleMerchants(List<MerchantDto> merchants) throws MerchantException, TransactionException {
         List<MerchantDto> handledMerchants = new ArrayList<>();
         for (MerchantDto mr : merchants) {
+            if (mr.getTransactions().isEmpty()) {
 
-            MerchantValidator validator = new MerchantValidator();
-            MerchantDto validMerchant = validator.validate(mr);
+                MerchantValidator validator = new MerchantValidator();
+                MerchantDto validMerchant = validator.validate(mr);
+                MerchantDto merchant = merchantService.findMerchantByDescrStatus(validMerchant);
 
-            MerchantDto savedMerchant = merchantService.save(MerchantConverter.convertToMerchant(validMerchant));
-            handledMerchants.add(savedMerchant);
+                MerchantDto savedMerchant = merchantService.save(MerchantConverter.convertToMerchant(merchant));
+                handledMerchants.add(savedMerchant);
+            }else {
 
-            if (!mr.getTransactions().isEmpty()) {
                 mr.getTransactions().stream()
-                        .forEach(tr -> tr.setMerchant(savedMerchant));
+                        .forEach(tr -> tr.setMerchant(mr));
                 handleTransactions(mr.getTransactions());
             }
         }
@@ -97,17 +99,19 @@ public class TransactionMerchantHandlerService {
         return chains;
     }
 
-
     private TransactionDto validateTransaction(TransactionDto trans) throws TransactionException, MerchantException {
 
         TransactionValidator validator = new AuthorizeValidator();
         TransactionDto validatedTrans = validator.validateTransaction(trans);
 
-        MerchantDto merchant = merchantService.findExistingMerchant(validatedTrans.getMerchant());
+        MerchantDto merchant = validatedTrans.getMerchant();
+        merchant.setTransactions(List.of(validatedTrans));
+
         MerchantValidator merchantValidator = new MerchantValidator();
         MerchantDto validatedMerchant = merchantValidator.validate(merchant);
+        MerchantDto existingMerchant = merchantService.findMerchantByDescrStatus(validatedMerchant);
 
-        validatedTrans.setMerchant(validatedMerchant);
+        validatedTrans.setMerchant(existingMerchant);
 
         return validatedTrans;
     }

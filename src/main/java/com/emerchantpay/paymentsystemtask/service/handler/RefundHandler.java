@@ -7,6 +7,8 @@ import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.List;
 
 @Service
 public class RefundHandler extends TransactionHandler {
+
+    Log log = LogFactory.getLog(this.getClass());
     @Autowired
     TransactionService service;
     @Override
@@ -42,6 +46,10 @@ public class RefundHandler extends TransactionHandler {
                         && chargeTransaction.getMerchant().equals(refundTrans.getMerchant())) {
 
                     updateReferencedChargeTransaction(chargeTransaction, refundTrans);
+                } else {
+                    log.warn("The merchants for Charge and Refund transactions are different.");
+                    refundTrans.setStatus(TransactionStatus.ERROR.getName());
+                    refundTrans.setReferenceIdentifier(null);
                 }
             }
             TransactionDto savedRefundTransaction =

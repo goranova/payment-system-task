@@ -67,11 +67,14 @@ public class MerchantDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MerchantDto that)) return false;
-        return  Objects.equals(getDescription(), that.getDescription()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getMerchantStatus(), that.getMerchantStatus());
+        return  Objects.equals(getDescription(), that.getDescription())
+                && Objects.equals(getEmail(), that.getEmail())
+                && Objects.equals(getMerchantStatus(), that.getMerchantStatus())
+                && Objects.equals(getTotalTransactionSum(), that.getTotalTransactionSum());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getIdentifier(), getDescription(), getEmail(), getMerchantStatus());
+        return Objects.hash(getDescription(), getEmail(), getMerchantStatus(), getTotalTransactionSum());
     }
 }

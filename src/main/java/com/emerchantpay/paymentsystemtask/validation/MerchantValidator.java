@@ -6,6 +6,8 @@ import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import org.apache.commons.validator.routines.EmailValidator;
 
+import java.util.stream.Stream;
+
 
 public class MerchantValidator {
 
@@ -14,15 +16,28 @@ public class MerchantValidator {
         if(merchantDto==null){
             throw new MerchantException(Message.MISSING_MERCHANT.getName());
         }
-        validateEmail(merchantDto);
+        validateSupportedStatus(merchantDto);
         validateStatus(merchantDto);
         validateTotalTrSum(merchantDto);
+        validateEmail(merchantDto);
+        validateDescription(merchantDto);
         return merchantDto;
+    }
+
+    public MerchantDto validateSupportedStatus(MerchantDto merchant) throws MerchantException {
+        boolean isStatusNonMatch = Stream.of(MerchantStatus.values())
+                .noneMatch(s->s.getName().equals(merchant.getMerchantStatus()));
+
+        if(merchant.getMerchantStatus()==null || isStatusNonMatch){
+            throw new MerchantException(Message.UNSUPPORTED_MERCHANT_STATUS.getName(),
+                    merchant.getMerchantStatus());
+        }
+        return merchant;
     }
 
     public MerchantDto validateStatus(MerchantDto merchantDto) throws MerchantException {
 
-        if( merchantDto.getMerchantStatus().equals(MerchantStatus.INACTIVE.name() )
+        if(merchantDto.getMerchantStatus().equals(MerchantStatus.INACTIVE.name() )
                 && !merchantDto.getTransactions().isEmpty()) {
             throw new MerchantException(Message.INACTIVE_MERCHANT.getName());
         }
@@ -45,5 +60,12 @@ public class MerchantValidator {
             throw new MerchantException(Message.INVALID_TRANSACTION_SUM.getName(), String.valueOf(merchantDto.getTotalTransactionSum()));
         }
         return merchantDto;
+    }
+
+    public MerchantDto validateDescription (MerchantDto merchant) throws MerchantException {
+        if(merchant.getDescription()==null){
+            throw new MerchantException(Message.MISSING_MERCHANT_DESCRIPTION.getName());
+        }
+        return merchant;
     }
 }

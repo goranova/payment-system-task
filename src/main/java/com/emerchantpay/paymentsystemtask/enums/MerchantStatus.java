@@ -5,8 +5,11 @@ public enum MerchantStatus {
     ACTIVE("ACTIVE"),
     INACTIVE("INACTIVE");
 
-    private String value;
-    MerchantStatus (String value){
-        this.value=value;
+    private String name;
+    MerchantStatus (String name){
+        this.name=name;
+    }
+    public String getName(){
+        return name;
     }
 }

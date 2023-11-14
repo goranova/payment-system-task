@@ -11,6 +11,10 @@ public enum Message {
 
     INACTIVE_MERCHANT("inactive.merchant"),
 
+    UNSUPPORTED_MERCHANT_STATUS("unsupported.merchant.status"),
+
+    MISSING_MERCHANT_DESCRIPTION("missing.mer.description"),
+
     INVALID_EMAIL("invalid.email"),
 
     INVALID_TRANSACTION_SUM("invalid.transaction.sum"),
@@ -24,6 +28,7 @@ public enum Message {
     MISSING_TRANS_REFERENCE_IDENTIFIER("missing.trans.reference.identifier"),
 
     MULTIPLE_TRANSACTIONS("multiple.trans");
+
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",
             Locale.ENGLISH);
