@@ -29,8 +29,8 @@ public class TransactionService {
     }
 
     public List<TransactionDto> findTransactions() {
-        List<Transaction> auth = trans.findTransactions();
-        return auth.stream()
+        List<Transaction> transactions = trans.findTransactions();
+        return transactions.stream()
                 .map(TransactionConverter::convertToTransactionDto)
                 .collect(Collectors.toList());
     }

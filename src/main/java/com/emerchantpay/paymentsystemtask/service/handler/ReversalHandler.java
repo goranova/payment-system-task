@@ -32,16 +32,13 @@ public class ReversalHandler extends TransactionHandler {
                 if(authTransaction==null){
                     reversalTrans.setStatus(TransactionStatus.ERROR.getName());
                     reversalTrans.setReferenceIdentifier(null);
+                    reversalTrans.setMerchant(null);
                 }
             }
 
             if(reversalTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
-
-                if( authTransaction.getMerchant()!=null
-                        && authTransaction.getMerchant().equals(reversalTrans.getMerchant() )) {
-
                     updateReferencedAuthTransaction(authTransaction);
-                }
+                    reversalTrans.setMerchant(authTransaction.getMerchant());
             }
             TransactionDto savedReversalTransaction =
                     service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));

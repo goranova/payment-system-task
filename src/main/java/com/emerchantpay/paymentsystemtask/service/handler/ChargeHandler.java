@@ -28,27 +28,6 @@ public class ChargeHandler extends TransactionHandler {
 
         if (transaction.getTransactionType().equals(TransactionType.CHARGE.getName())) {
 
-            TransactionDto authTransaction = null;
-            if(!transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
-                authTransaction =
-                        service.findNonReferencedAuthTransByRefId(transaction.getReferenceIdentifier(), TransactionStatus.APPROVED);
-
-                if(authTransaction==null){
-                    transaction.setStatus(TransactionStatus.ERROR.getName());
-                    transaction.setReferenceIdentifier(null);
-                }
-            }
-            if(transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
-                if( authTransaction.getMerchant()!=null
-                        && authTransaction.getMerchant().equals(transaction.getMerchant() )) {
-
-                    updateMerchantTotalAmount(transaction, authTransaction.getMerchant());
-                }else {
-                    log.warn("The merchants for Authorize and Charge transactions are different.");
-                    transaction.setStatus(TransactionStatus.ERROR.getName());
-                    transaction.setReferenceIdentifier(null);
-                }
-            }
             if(transaction.getStatus().equals(TransactionStatus.REFUNDED.name())){
 
                 TransactionDto refundTransaction = createRefundTransaction(transaction);
@@ -56,10 +35,29 @@ public class ChargeHandler extends TransactionHandler {
                     transactions.addAll(nextTransition.handleTransaction(refundTransaction));
                 }
                 return transactions;
+            } else {
+                TransactionDto authTransaction = null;
+                if(!transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
+                    authTransaction =
+                            service.findNonReferencedAuthTransByRefId(transaction.getReferenceIdentifier(), TransactionStatus.APPROVED);
+
+                    if(authTransaction==null){
+                        transaction.setStatus(TransactionStatus.ERROR.getName());
+                        transaction.setReferenceIdentifier(null);
+                        transaction.setMerchant(null);
+                    }
+                }
+                if(transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {
+                    updateMerchantTotalAmount(transaction, authTransaction);
+                }
+
+                TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToTransaction(transaction));
+                transactions.add(savedChargeTransaction);
+                return transactions;
+
             }
-            TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToTransaction(transaction));
-            transactions.add(savedChargeTransaction);
-            return transactions;
+
+
         } else {
             if (this.nextTransition != null) {
                 return nextTransition.handleTransaction(transaction);
@@ -81,10 +79,19 @@ public class ChargeHandler extends TransactionHandler {
         return transaction;
     }
 
-    private void updateMerchantTotalAmount(TransactionDto transaction, MerchantDto merchant){
+    private void updateMerchantTotalAmount(TransactionDto transaction, TransactionDto authTrans){
 
-        Double amount = merchant.getTotalTransactionSum() + transaction.getAmount();
-        merchant.setTotalTransactionSum(amount);
+        MerchantDto merchant = authTrans.getMerchant();
+        if(transaction.getAmount().doubleValue()==authTrans.getAmount().doubleValue()){
+
+            Double amount = merchant.getTotalTransactionSum() + transaction.getAmount();
+            merchant.setTotalTransactionSum(amount);
+        }else {
+            transaction.setStatus(TransactionStatus.ERROR.getName());
+            transaction.setReferenceIdentifier(null);
+            log.info("The Charge Transaction amount is different form Authorize Transaction amount");
+        }
         transaction.setMerchant(merchant);
+
     }
 }

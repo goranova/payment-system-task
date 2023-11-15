@@ -1,7 +1,5 @@
 package com.emerchantpay.paymentsystemtask.service;
 
-import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
-import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
@@ -9,9 +7,7 @@ import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.AuthorizeChain;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.ChainHandler;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.ReversalChain;
-import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import com.emerchantpay.paymentsystemtask.validation.transaction.AuthorizeValidator;
-import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +25,13 @@ import java.util.Map;
  * */
 
 @Service
-public class TransactionMerchantHandlerService {
+public class TransactionHandlerService {
     @Autowired
     private AuthorizeChain authChain;
     @Autowired
     private ReversalChain reversalChain;
     @Autowired
-    private TransactionService transactionService;
-    @Autowired
-    private MerchantService merchantService;
+    private AuthorizeValidator authorizeValidator;
 
 
     public List<TransactionDto> handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
@@ -46,8 +40,8 @@ public class TransactionMerchantHandlerService {
         Map<TransactionType, ChainHandler> chains = getChains();
 
         for (TransactionDto tr : transactions) {
-            TransactionDto validatedTrans = validateTransaction(tr);
 
+            TransactionDto validatedTrans = authorizeValidator.validateTransaction(tr);
             TransactionType transactionType = TransactionType.getByValue(tr.getTransactionType()).get();
             if (chains.containsKey(transactionType)) {
 
@@ -61,32 +55,6 @@ public class TransactionMerchantHandlerService {
 
     }
 
-    public List<MerchantDto> handleMerchants(List<MerchantDto> merchants) throws MerchantException, TransactionException {
-        List<MerchantDto> handledMerchants = new ArrayList<>();
-        for (MerchantDto mr : merchants) {
-            if (mr.getTransactions().isEmpty()) {
-
-                MerchantValidator validator = new MerchantValidator();
-                MerchantDto validMerchant = validator.validate(mr);
-                MerchantDto merchant = merchantService.findMerchantByDescrStatus(validMerchant);
-
-                MerchantDto savedMerchant = merchantService.save(MerchantConverter.convertToMerchant(merchant));
-                handledMerchants.add(savedMerchant);
-            }else {
-
-                mr.getTransactions().stream()
-                        .forEach(tr -> tr.setMerchant(mr));
-                handleTransactions(mr.getTransactions());
-            }
-        }
-
-        return handledMerchants;
-    }
-
-    public List<TransactionDto> findTransactions() {
-        return transactionService.findTransactions();
-    }
-
     private Map<TransactionType, ChainHandler> getChains() {
 
         Map<TransactionType, ChainHandler> chains = new HashMap<>();
@@ -98,23 +66,5 @@ public class TransactionMerchantHandlerService {
 
         return chains;
     }
-
-    private TransactionDto validateTransaction(TransactionDto trans) throws TransactionException, MerchantException {
-
-        TransactionValidator validator = new AuthorizeValidator();
-        TransactionDto validatedTrans = validator.validateTransaction(trans);
-
-        MerchantDto merchant = validatedTrans.getMerchant();
-        merchant.setTransactions(List.of(validatedTrans));
-
-        MerchantValidator merchantValidator = new MerchantValidator();
-        MerchantDto validatedMerchant = merchantValidator.validate(merchant);
-        MerchantDto existingMerchant = merchantService.findMerchantByDescrStatus(validatedMerchant);
-
-        validatedTrans.setMerchant(existingMerchant);
-
-        return validatedTrans;
-    }
-
 
 }

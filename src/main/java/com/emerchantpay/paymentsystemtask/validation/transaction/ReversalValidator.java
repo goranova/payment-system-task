@@ -24,7 +24,7 @@ public class ReversalValidator implements TransactionValidator {
     }
     public TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException {
         if (!transaction.getTransactionType().equals(TransactionType.REVERSAL.getName())) {
-            throw new TransactionException(Message.UNSUPPORTED_TRANSACTION_TYPE.getName());
+            throw new TransactionException(Message.UNSUPPORTED_TRANSACTION_TYPE.getName(),transaction.getTransactionType());
         }
         return validate(transaction);
     }

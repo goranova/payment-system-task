@@ -28,7 +28,9 @@ public class TransactionConverter {
         dto.setCustomerPhone(transaction.getCustomerPhone());
         dto.setReferenceIdentifier(transaction.getReferenceIdentifier());
         dto.setAmount(transaction.getAmount());
-        dto.setMerchant(MerchantConverter.convertToMerchantDto(transaction.getMerchant()));
+        dto.setMerchant(transaction.getMerchant()!=null ?
+                MerchantConverter.convertToMerchantDto(transaction.getMerchant())
+                :null);
         dto.setTimestamp(transaction.getTimestamp().toString());
         return dto;
     }
@@ -44,7 +46,9 @@ public class TransactionConverter {
         transaction.setStatus(TransactionStatus.valueOf(dto.getStatus()));
         transaction.setTransactionType(dto.getTransactionType());
         transaction.setReferenceIdentifier(dto.getReferenceIdentifier());
-        transaction.setMerchant(MerchantConverter.convertToMerchant(dto.getMerchant()));
+        transaction.setMerchant(dto.getMerchant()!=null ?
+                MerchantConverter.convertToMerchant(dto.getMerchant())
+                :null);
         return transaction;
     }
 

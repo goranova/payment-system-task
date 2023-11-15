@@ -4,12 +4,12 @@ import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
-import com.emerchantpay.paymentsystemtask.service.TransactionMerchantHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,9 +20,6 @@ public class MerchantController {
 
     @Autowired
     MerchantService merchantService;
-
-    @Autowired
-    TransactionMerchantHandlerService merTransService;
 
     @GetMapping("/display")
     public ModelAndView findAllMerchants() {
@@ -81,7 +78,13 @@ public class MerchantController {
     }
     @PostMapping("/importMerchants")
     public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants) throws MerchantException, TransactionException {
-        return merTransService.handleMerchants(merchants);
+
+        List<MerchantDto> processedMerchants=new ArrayList<>();
+        for (MerchantDto mer:merchants){
+           MerchantDto processedMer = merchantService.processMerchant(mer);
+           processedMerchants.add(processedMer);
+        }
+        return processedMerchants;
     }
 
     @ModelAttribute("existingMerchant")

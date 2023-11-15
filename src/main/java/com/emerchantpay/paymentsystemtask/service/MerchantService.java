@@ -4,12 +4,10 @@ import com.emerchantpay.paymentsystemtask.dao.MerchantRepository;
 import com.emerchantpay.paymentsystemtask.dto.MerchantConverter;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
-import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
 import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,7 +42,24 @@ public class MerchantService {
        if(exitingMer!=null) {
            return MerchantConverter.convertToMerchantDto(exitingMer);
        }
-       return mer;
+       return null;
+    }
+
+    public MerchantDto processMerchant(MerchantDto merchant) throws MerchantException {
+
+        MerchantValidator validator = new MerchantValidator();
+        MerchantDto validMerchant = validator.validate(merchant);
+
+        MerchantDto existingMerchant = findMerchantByDescrStatus(validMerchant);
+
+        if (existingMerchant != null) {
+            if (!existingMerchant.equals(validMerchant)) {
+                validMerchant.setIdentifier(existingMerchant.getIdentifier());
+            } else {
+                return existingMerchant;
+            }
+        }
+        return save(MerchantConverter.convertToMerchant(validMerchant));
     }
 
     public boolean editMerchant(MerchantDto existingMerchant, MerchantDto editedMerchant) throws MerchantException {

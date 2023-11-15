@@ -3,7 +3,8 @@ package com.emerchantpay.paymentsystemtask.controller;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
-import com.emerchantpay.paymentsystemtask.service.TransactionMerchantHandlerService;
+import com.emerchantpay.paymentsystemtask.service.TransactionHandlerService;
+import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,12 +15,15 @@ import java.util.List;
 @RequestMapping("/transaction")
 public class TransactionController {
     @Autowired
-    TransactionMerchantHandlerService transMerService;
+    TransactionHandlerService transMerService;
+
+    @Autowired
+    TransactionService transactionService;
 
 
     @GetMapping("/display")
     public ModelAndView findTransaction() {
-        List<TransactionDto> transactions = transMerService.findTransactions();
+        List<TransactionDto> transactions = transactionService.findTransactions();
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("transactions", transactions);
         modelAndView.setViewName("transaction/transaction-display");

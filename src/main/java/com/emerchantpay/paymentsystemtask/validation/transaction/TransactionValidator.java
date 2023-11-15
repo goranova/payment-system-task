@@ -3,6 +3,7 @@ package com.emerchantpay.paymentsystemtask.validation.transaction;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
+import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -17,7 +18,7 @@ public interface TransactionValidator {
 
     Log log = LogFactory.getLog(TransactionValidator.class);
 
-     default TransactionDto validate(TransactionDto transaction) throws TransactionException {
+     default TransactionDto validate(TransactionDto transaction) throws TransactionException, MerchantException {
 
          if( transaction==null ){
              throw new TransactionException(Message.MISSING_TRANSACTION.getName());
@@ -32,7 +33,7 @@ public interface TransactionValidator {
         return transaction;
      }
 
-    TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException;
+    TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException, MerchantException;
 
      default TransactionDto validateSupportedStatus(TransactionDto transaction) throws TransactionException {
          boolean isStatusNonMatch = Stream.of(TransactionStatus.values())
