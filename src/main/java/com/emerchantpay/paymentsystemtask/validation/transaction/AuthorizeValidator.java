@@ -11,6 +11,8 @@ import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class AuthorizeValidator implements TransactionValidator {
     @Autowired
@@ -49,11 +51,15 @@ public class AuthorizeValidator implements TransactionValidator {
     }
 
     public TransactionDto validateMerchant(TransactionDto transaction) throws MerchantException {
+
         MerchantDto merchant = transaction.getMerchant();
         if(merchant!=null){
+
+            merchant.setTransactions(List.of(transaction));
             MerchantDto validMer = merchantService.processMerchant(transaction.getMerchant());
             transaction.setMerchant(validMer);
             return transaction;
+
         }else {
             throw new MerchantException(Message.MISSING_MERCHANT.getName());
         }
