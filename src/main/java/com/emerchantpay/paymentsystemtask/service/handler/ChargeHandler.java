@@ -45,6 +45,7 @@ public class ChargeHandler extends TransactionHandler {
                         transaction.setStatus(TransactionStatus.ERROR.getName());
                         transaction.setReferenceIdentifier(null);
                         transaction.setMerchant(null);
+                        log.info("There isn't Authorize transaction with the same reference Id");
                     }
                 }
                 if(transaction.getStatus().equals(TransactionStatus.APPROVED.name())) {

@@ -38,11 +38,13 @@ public class RefundHandler extends TransactionHandler {
                     refundTrans.setStatus(TransactionStatus.ERROR.getName());
                     refundTrans.setReferenceIdentifier(null);
                     refundTrans.setMerchant(null);
+                    log.info("There isn't Charge transaction with the same reference Id");
                 }
             }
 
             if(refundTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
                 updateReferencedChargeTransaction(chargeTransaction, refundTrans);
+                transactions.add(chargeTransaction);
             }
             TransactionDto savedRefundTransaction =
                     service.saveTransaction(TransactionConverter.convertToTransaction(refundTrans));

@@ -6,6 +6,8 @@ import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 public class ReversalHandler extends TransactionHandler {
+
+    Log log = LogFactory.getLog(this.getClass());
     @Autowired
     TransactionService service;
     @Override
@@ -33,12 +37,14 @@ public class ReversalHandler extends TransactionHandler {
                     reversalTrans.setStatus(TransactionStatus.ERROR.getName());
                     reversalTrans.setReferenceIdentifier(null);
                     reversalTrans.setMerchant(null);
+                    log.info("There isn't Authorize transaction with the same reference Id");
                 }
             }
 
             if(reversalTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
                     updateReferencedAuthTransaction(authTransaction);
                     reversalTrans.setMerchant(authTransaction.getMerchant());
+                    transactions.add(authTransaction);
             }
             TransactionDto savedReversalTransaction =
                     service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));
