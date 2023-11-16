@@ -67,7 +67,7 @@ public class MerchantController {
 
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ModelAndView deleteMerchant( @ModelAttribute("existingMerchant") MerchantDto existingMerchant,
                                         ModelAndView modelAndView,
                                         @PathVariable("id")  String id,
