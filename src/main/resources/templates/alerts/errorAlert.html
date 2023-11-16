@@ -13,7 +13,8 @@
 <div class="m-4">
     <!-- Error Alert -->
     <div class="alert alert-danger alert-dismissible fade show">
-        <strong>Error!</strong> A problem has been occurred while submitting your data.
+        <p th:text="${message}"/>
+        <strong >Error!</strong> A problem has been occurred while submitting your data.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 

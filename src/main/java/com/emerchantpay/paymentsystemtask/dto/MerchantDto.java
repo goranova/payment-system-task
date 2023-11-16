@@ -1,6 +1,8 @@
 package com.emerchantpay.paymentsystemtask.dto;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class MerchantDto {
 
@@ -10,7 +12,7 @@ public class MerchantDto {
 
     private String merchantStatus;
     private Double totalTransactionSum;
-    private List<TransactionDto> transactions = new ArrayList<>();
+    private Set<TransactionDto> transactions = new HashSet<>();
 
     public Long getIdentifier() {
         return identifier;
@@ -52,16 +54,13 @@ public class MerchantDto {
         this.totalTransactionSum = totalTransactionSum;
     }
 
-    public List<TransactionDto> getTransactions() {
+    public Set<TransactionDto> getTransactions() {
         return transactions;
     }
 
-    public void setTransactions(List<TransactionDto> transactions) {
+    public void setTransactions(Set<TransactionDto> transactions) {
         this.transactions = transactions;
     }
-
-
-
 
     @Override
     public boolean equals(Object o) {

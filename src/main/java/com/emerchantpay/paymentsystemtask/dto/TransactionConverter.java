@@ -5,7 +5,10 @@ import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.model.transaction.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TransactionConverter {
     private static final Map<String, Transaction> map = new HashMap<>();
@@ -50,6 +53,17 @@ public class TransactionConverter {
                 MerchantConverter.convertToMerchant(dto.getMerchant())
                 :null);
         return transaction;
+    }
+
+    public static Set<TransactionDto> convertToTransactionDto(Set<Transaction> transactions){
+
+        Set<TransactionDto> convertedTrans=new HashSet<>();
+        if(!transactions.isEmpty()){
+            convertedTrans = transactions.stream()
+                    .map(TransactionConverter::convertToTransactionDto)
+                    .collect(Collectors.toSet());
+        }
+        return convertedTrans;
     }
 
 

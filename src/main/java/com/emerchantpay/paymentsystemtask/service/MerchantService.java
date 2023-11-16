@@ -32,8 +32,10 @@ public class MerchantService {
 
         Long identifier = Long.valueOf(id);
         Optional<Merchant> merchant = merchantRep.findById(identifier);
-        return merchant.map(MerchantConverter::convertToMerchantDto).orElse(null);
+        return merchant.map(mr->MerchantConverter.convertToMerchantWithTransactionsDto(mr, mr.getTransactions()))
+                .orElse(new MerchantDto());
     }
+
 
     public MerchantDto findMerchantByDescrStatus(MerchantDto mer) {
 
@@ -70,11 +72,8 @@ public class MerchantService {
             MerchantDto editedValidMerchant = validator.validate(editedMerchant);
 
             if (!editedValidMerchant.equals(existingMerchant)) {
-                existingMerchant.setEmail(editedValidMerchant.getEmail());
-                existingMerchant.setDescription(editedValidMerchant.getDescription());
-                existingMerchant.setMerchantStatus(editedValidMerchant.getMerchantStatus());
-                existingMerchant.setTotalTransactionSum(editedMerchant.getTotalTransactionSum());
-                merchantRep.save(MerchantConverter.convertToMerchant(existingMerchant));
+                editedMerchant.setIdentifier(existingMerchant.getIdentifier());
+                merchantRep.save(MerchantConverter.convertToMerchant(editedMerchant));
                 return true;
             }
         }

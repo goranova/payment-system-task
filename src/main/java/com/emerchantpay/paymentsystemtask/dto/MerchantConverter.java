@@ -2,8 +2,9 @@ package com.emerchantpay.paymentsystemtask.dto;
 
 import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
+import com.emerchantpay.paymentsystemtask.model.transaction.Transaction;
 
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class MerchantConverter {
 
@@ -11,9 +12,10 @@ public class MerchantConverter {
         MerchantDto merchantDto = new MerchantDto();
         merchantDto.setDescription(merchant.getDescription());
         merchantDto.setEmail(merchant.getEmail());
-        merchantDto.setMerchantStatus(merchant.getStatus().name());
+        merchantDto.setMerchantStatus(merchant.getStatus().getName());
         merchantDto.setIdentifier(merchant.getIdentifier());
         merchantDto.setTotalTransactionSum(merchant.getTotalTransactionSum());
+
         return merchantDto;
     }
 
@@ -25,5 +27,13 @@ public class MerchantConverter {
         merchant.setStatus(MerchantStatus.valueOf(merchantDto.getMerchantStatus()));
         merchant.setTotalTransactionSum(merchantDto.getTotalTransactionSum());
         return merchant;
+    }
+
+    public static MerchantDto convertToMerchantWithTransactionsDto(Merchant merchant, Set<Transaction> transactions){
+
+        MerchantDto convertedMerchant = convertToMerchantDto(merchant);
+        Set<TransactionDto> convertedTrans = TransactionConverter.convertToTransactionDto(transactions);
+        convertedMerchant.setTransactions(convertedTrans);
+        return convertedMerchant;
     }
 }

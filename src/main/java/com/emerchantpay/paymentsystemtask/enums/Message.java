@@ -27,7 +27,13 @@ public enum Message {
 
     MISSING_TRANS_REFERENCE_IDENTIFIER("missing.trans.reference.identifier"),
 
-    MULTIPLE_TRANSACTIONS("multiple.trans");
+    MULTIPLE_TRANSACTIONS("multiple.trans"),
+
+    DUPLICATE_MERCHANT("duplicate.merchant"),
+
+    EDIT_MERCHANT("edit.merchant"),
+
+    DELETE_MERCHANT("delete.merchant");
 
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",

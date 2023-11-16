@@ -1,6 +1,7 @@
 package com.emerchantpay.paymentsystemtask.controller;
 
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
+import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,21 +52,26 @@ public class MerchantController {
     @PostMapping("/save")
     public ModelAndView saveMerchant( @SessionAttribute("existingMerchant") MerchantDto existingMerchant,
                                       MerchantDto editedMerchant,
-                                      ModelAndView modelAndView) throws MerchantException {
-       boolean isEdited = merchantService.editMerchant(existingMerchant,editedMerchant);
-       if(isEdited){
+                                      ModelAndView modelAndView,
+                                      RedirectAttributes redirectAttributes
+                                      ) throws MerchantException {
+
+        boolean isEdited = merchantService.editMerchant(existingMerchant,editedMerchant);
+        if(isEdited){
            modelAndView.setViewName("redirect:/alerts/successAlert");
-       }else {
+        }else {
            modelAndView.setViewName("redirect:/alerts/errorAlert");
-       }
-       return modelAndView;
+           redirectAttributes.addFlashAttribute("message",Message.EDIT_MERCHANT.getName());
+        }
+        return modelAndView;
 
     }
 
     @PostMapping("/delete/{id}")
     public ModelAndView deleteMerchant( @ModelAttribute("existingMerchant") MerchantDto existingMerchant,
                                         ModelAndView modelAndView,
-                                        @PathVariable("id")  String id) {
+                                        @PathVariable("id")  String id,
+                                        RedirectAttributes redirectAttributes) {
         existingMerchant = merchantService.findById(id);
 
         if(existingMerchant.getTransactions().isEmpty()){
@@ -72,6 +79,7 @@ public class MerchantController {
             modelAndView.setViewName("redirect:/alerts/successAlert");
         }else {
             modelAndView.setViewName("redirect:/alerts/errorAlert");
+            redirectAttributes.addFlashAttribute("message",Message.DELETE_MERCHANT.getName());
         }
         return modelAndView;
 
