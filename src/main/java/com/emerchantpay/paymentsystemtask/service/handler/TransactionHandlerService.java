@@ -1,4 +1,4 @@
-package com.emerchantpay.paymentsystemtask.service;
+package com.emerchantpay.paymentsystemtask.service.handler;
 
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
@@ -32,7 +32,6 @@ public class TransactionHandlerService {
     private ReversalChain reversalChain;
     @Autowired
     private AuthorizeValidator authorizeValidator;
-
 
     public List<TransactionDto> handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
 

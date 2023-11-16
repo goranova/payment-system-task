@@ -3,7 +3,7 @@ package com.emerchantpay.paymentsystemtask.controller;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
-import com.emerchantpay.paymentsystemtask.service.TransactionHandlerService;
+import com.emerchantpay.paymentsystemtask.service.handler.TransactionHandlerService;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/transaction")
 public class TransactionController {
     @Autowired
-    TransactionHandlerService transMerService;
+    TransactionHandlerService transactionHandlerService;
 
     @Autowired
     TransactionService transactionService;
@@ -32,7 +32,7 @@ public class TransactionController {
     }
     @PostMapping("/importTransaction")
     public List<TransactionDto> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException, TransactionException {
-       return transMerService.handleTransactions(trans);
+       return transactionHandlerService.handleTransactions(trans);
 
     }
 
