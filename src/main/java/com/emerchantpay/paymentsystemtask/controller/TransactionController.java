@@ -3,16 +3,18 @@ package com.emerchantpay.paymentsystemtask.controller;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
-import com.emerchantpay.paymentsystemtask.service.handler.TransactionHandlerService;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
+import com.emerchantpay.paymentsystemtask.service.handler.TransactionHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/transaction")
 public class TransactionController {
     @Autowired
     TransactionHandlerService transactionHandlerService;
@@ -21,19 +23,18 @@ public class TransactionController {
     TransactionService transactionService;
 
 
-    @GetMapping("/display")
+    @GetMapping("/transactions")
     public ModelAndView findTransaction() {
+
         List<TransactionDto> transactions = transactionService.findTransactions();
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("transactions", transactions);
-        modelAndView.setViewName("transaction/transaction-display");
+        modelAndView.setViewName("transaction/transaction");
 
         return modelAndView;
     }
-    @PostMapping("/importTransaction")
+    @PostMapping("/transactions")
     public List<TransactionDto> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException, TransactionException {
        return transactionHandlerService.handleTransactions(trans);
-
     }
-
 }

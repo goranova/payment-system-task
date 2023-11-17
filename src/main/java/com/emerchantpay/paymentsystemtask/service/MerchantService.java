@@ -36,6 +36,13 @@ public class MerchantService {
                 .orElse(new MerchantDto());
     }
 
+    public MerchantDto findByName(String id) {
+
+        Long identifier = Long.valueOf(id);
+        Optional<Merchant> merchant = merchantRep.findById(identifier);
+        return merchant.map(mr->MerchantConverter.convertToMerchantWithTransactionsDto(mr, mr.getTransactions()))
+                .orElse(new MerchantDto());
+    }
 
     public MerchantDto findMerchantByDescrStatus(MerchantDto mer) {
 

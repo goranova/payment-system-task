@@ -22,7 +22,6 @@ public class TransactionService {
     @Autowired
     private TransactionRepository trans;
 
-
     public TransactionDto saveTransaction(Transaction transaction) {
         Transaction savedTrans = trans.save(transaction);
         return TransactionConverter.convertToTransactionDto(savedTrans);
@@ -68,6 +67,4 @@ public class TransactionService {
     public void deleteTransOlderThanHour(Timestamp timestamp){
         trans.deleteTranOlderThanHour(timestamp);
     }
-
-
 }

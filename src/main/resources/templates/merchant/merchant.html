@@ -26,10 +26,10 @@
               <td th:text="${merch.description}"></td>
               <td th:text="${merch.email}"></td>
               <td th:text=${merch.totalTransactionSum}></td>
-              <form  th:action =  "@{'/merchants/edit/' + ${merch.identifier}}"    method="GET">
+              <form  th:action =  "@{'/merchants/' + ${merch.identifier}}"    method="GET">
                 <td><button type="submit" class="editbutton" >Edit</button></td>
               </form>
-              <form  th:action =  "@{'/merchants/delete/' + ${merch.identifier}}"   th:method="DELETE">
+              <form  th:action =  "@{'/merchants/' + ${merch.identifier}}"   th:method="DELETE">
                   <td><button type="submit" class="deletebutton" >Delete</button></td>
               </form>
           </tr>

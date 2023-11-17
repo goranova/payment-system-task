@@ -6,7 +6,6 @@ import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -15,30 +14,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/merchants")
-@SessionAttributes("existingMerchant")
-@Scope("session")
 public class MerchantController {
 
     @Autowired
     MerchantService merchantService;
 
-    @GetMapping("/display")
+    @GetMapping("/merchants")
     public ModelAndView findAllMerchants() {
         List<MerchantDto> merchants = merchantService.findAllMerchants();
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("merchants", merchants);
-        modelAndView.setViewName("merchant/merchant-display");
+        modelAndView.setViewName("merchant/merchant");
 
         return modelAndView;
     }
 
 
-    @GetMapping ("/edit/{id}")
+    @GetMapping ("/merchants/{id}")
     public ModelAndView editMerchant(MerchantDto editedMerchant, ModelAndView modelAndView,
-                                     @PathVariable("id")  String id,
-                                     @ModelAttribute MerchantDto existingMerchant) {
-        existingMerchant = merchantService.findById(id);
+                                     @PathVariable("id")  String id) {
+
+        MerchantDto existingMerchant = merchantService.findById(id);
 
         modelAndView.addObject("merchant", editedMerchant);
         modelAndView.addObject("existingMerchant", existingMerchant);
@@ -48,31 +44,38 @@ public class MerchantController {
         return modelAndView;
     }
 
+    @PutMapping(value = "/merchants/{id}")
+    public ModelAndView updateMerchant( @PathVariable("id") String id,
+                                        MerchantDto editedMerchant,
+                                        ModelAndView modelAndView,
+                                        RedirectAttributes redirectAttributes) throws MerchantException {
 
-    @PostMapping("/save")
-    public ModelAndView saveMerchant( @SessionAttribute("existingMerchant") MerchantDto existingMerchant,
-                                      MerchantDto editedMerchant,
-                                      ModelAndView modelAndView,
-                                      RedirectAttributes redirectAttributes
-                                      ) throws MerchantException {
+        MerchantDto existingMerchant = merchantService.findById(id);
+
+        if(existingMerchant.getIdentifier()==null){
+            throw  new MerchantException(Message.MISSING_MERCHANT.getName());
+        }
 
         boolean isEdited = merchantService.editMerchant(existingMerchant,editedMerchant);
         if(isEdited){
-           modelAndView.setViewName("redirect:/alerts/successAlert");
+            modelAndView.setViewName("redirect:/alerts/successAlert");
         }else {
-           modelAndView.setViewName("redirect:/alerts/errorAlert");
-           redirectAttributes.addFlashAttribute("message",Message.EDIT_MERCHANT.getName());
+            modelAndView.setViewName("redirect:/alerts/errorAlert");
+            redirectAttributes.addFlashAttribute("message",Message.EDIT_MERCHANT.getName());
         }
         return modelAndView;
 
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ModelAndView deleteMerchant( @ModelAttribute("existingMerchant") MerchantDto existingMerchant,
-                                        ModelAndView modelAndView,
+    @DeleteMapping("/merchants/{id}")
+    public ModelAndView deleteMerchant(ModelAndView modelAndView,
                                         @PathVariable("id")  String id,
-                                        RedirectAttributes redirectAttributes) {
-        existingMerchant = merchantService.findById(id);
+                                        RedirectAttributes redirectAttributes) throws MerchantException {
+
+        MerchantDto existingMerchant = merchantService.findById(id);
+        if (existingMerchant.getIdentifier()==null){
+           throw new MerchantException(Message.MISSING_MERCHANT.getName());
+        }
 
         if(existingMerchant.getTransactions().isEmpty()){
             merchantService.deleteMerchant(existingMerchant);
@@ -84,7 +87,7 @@ public class MerchantController {
         return modelAndView;
 
     }
-    @PostMapping("/importMerchants")
+    @PostMapping("/merchants")
     public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants) throws MerchantException, TransactionException {
 
         List<MerchantDto> processedMerchants=new ArrayList<>();
@@ -94,10 +97,4 @@ public class MerchantController {
         }
         return processedMerchants;
     }
-
-    @ModelAttribute("existingMerchant")
-    public MerchantDto merchantDto() {
-        return new MerchantDto();
-    }
-
 }

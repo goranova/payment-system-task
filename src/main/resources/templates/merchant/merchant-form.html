@@ -8,7 +8,8 @@
 <h4>Edit Merchant</h4>
 </br>
    <div class="form-group">
-     <form th:action="@{/merchants/save}" th:object="${merchant}" method="POST">
+       <form th:action="@{'/merchants/' + ${existingMerchant.identifier}}"  th:object="${existingMerchant}" th:method="PUT">
+           <div th:object="${merchant}">
 
          <label>Choose Status:
 
@@ -28,12 +29,14 @@
          <input id="sum" class="form-control"  type="text" placeholder="Transaction sum" th:field=${merchant.totalTransactionSum}/>
          </br>
 
+           </div>
          <table>
            <tr>
                <td> <button type="submit"> Save Merchant </button> </td>
+
      </form>
 
-       <td> <form  th:action =  "@{/merchants/display}"  method="GET">
+       <td> <form  th:action =  "@{/merchants}"  method="GET">
            <button type="submit">Cancel</button>
        </form>
        </td>

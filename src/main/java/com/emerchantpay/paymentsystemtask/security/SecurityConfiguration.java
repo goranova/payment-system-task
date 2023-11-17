@@ -45,7 +45,7 @@ public class SecurityConfiguration {
 				.requestMatchers("/payments").authenticated()
 				.requestMatchers("/alerts/**").hasAuthority("ROLE_ADMIN")
 				.requestMatchers("/merchants/**").hasAuthority("ROLE_ADMIN")
-				.requestMatchers("/transaction/**").hasAuthority("ROLE_ADMIN"))
+				.requestMatchers("/transactions/**").hasAuthority("ROLE_ADMIN"))
 
 				.authenticationManager(authenticationManager)
 				.httpBasic(Customizer.withDefaults())
