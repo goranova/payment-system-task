@@ -1,6 +1,7 @@
 package com.emerchantpay.paymentsystemtask.service;
 
 import com.emerchantpay.paymentsystemtask.dao.TransactionRepository;
+import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
@@ -14,27 +15,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class TransactionService {
     @Autowired
     private TransactionRepository trans;
 
+    @Autowired
+    private AuthenticationService authenticationService;
+
     public TransactionDto saveTransaction(Transaction transaction) {
         Transaction savedTrans = trans.save(transaction);
         return TransactionConverter.convertToTransactionDto(savedTrans);
     }
 
-    public List<TransactionDto> findTransactions() {
-        List<Transaction> transactions = trans.findTransactions();
-        return transactions.stream()
-                .map(TransactionConverter::convertToTransactionDto)
-                .collect(Collectors.toList());
+
+    public Set<TransactionDto> findAuthenticatedUserTransactions(){
+       MerchantDto merchant = authenticationService.getAuthenticatedMerchant();
+       if(merchant!=null){
+           return merchant.getTransactions();
+       }else return new HashSet<>();
     }
 
-    public TransactionDto findNonRefundedChargeTransByRefId(String referenceId, TransactionStatus status) throws TransactionException {
+    public TransactionDto findNonRefundedChargeTransByRefIdMerId(String referenceId,  TransactionStatus status, String merchantId) throws TransactionException {
 
         boolean isRefundExists =
                 trans.existsByTransactionTypeAndReferenceIdentifier(TransactionType.REFUND.getName(),referenceId);
@@ -42,14 +47,14 @@ public class TransactionService {
             throw new TransactionException(Message.MULTIPLE_TRANSACTIONS.getName(), TransactionType.REFUND.getName(), referenceId);
         }
 
-       ChargeTransaction chargeTransaction = trans.findChargeTransactionByRefId(referenceId,status);
+       ChargeTransaction chargeTransaction = trans.findChargeTransactionByRefIdMerId(referenceId, status,merchantId);
        if(chargeTransaction!=null){
            return TransactionConverter.convertToTransactionDto(chargeTransaction);
        }
        return null;
     }
 
-    public TransactionDto findNonReferencedAuthTransByRefId(String referenceId, TransactionStatus status) throws TransactionException {
+    public TransactionDto findNonReferencedAuthTransByRefIdMerId(String referenceId, TransactionStatus status, String merchantId) throws TransactionException {
 
         boolean isChargeExists =
                 trans.existsByTransactionTypeAndReferenceIdentifier(TransactionType.CHARGE.getName(),referenceId);
@@ -57,7 +62,7 @@ public class TransactionService {
             throw new TransactionException(Message.MULTIPLE_TRANSACTIONS.getName(), TransactionType.CHARGE.getName(), referenceId);
         }
 
-        AuthorizeTransaction auth = trans.findAuthorizeTransactionByRefId(referenceId,status);
+        AuthorizeTransaction auth = trans.findAuthorizeTransactionByRefIdMerId(referenceId,status, merchantId);
         if(auth!=null){
             return TransactionConverter.convertToTransactionDto(auth);
         }

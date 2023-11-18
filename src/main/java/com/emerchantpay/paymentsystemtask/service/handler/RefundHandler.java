@@ -28,23 +28,24 @@ public class RefundHandler extends TransactionHandler {
 
         if (refundTrans.getTransactionType().equals(TransactionType.REFUND.getName())) {
 
-            TransactionDto chargeTransaction=null;
-            if(!refundTrans.getStatus().equals(TransactionStatus.ERROR.getName())){
+            TransactionDto chargeTransaction;
+            if(refundTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
 
                  chargeTransaction =
-                         service.findNonRefundedChargeTransByRefId(refundTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
+                         service.findNonRefundedChargeTransByRefIdMerId(refundTrans.getReferenceIdentifier(),
+                                 TransactionStatus.APPROVED,
+                                 String.valueOf(refundTrans.getMerchant().getIdentifier())
+                                 );
 
                 if(chargeTransaction==null){
                     refundTrans.setStatus(TransactionStatus.ERROR.getName());
                     refundTrans.setReferenceIdentifier(null);
-                    refundTrans.setMerchant(null);
                     log.info("There isn't Charge transaction with the same reference Id");
+                }else {
+                    updateReferencedChargeTransaction(chargeTransaction, refundTrans);
+                    transactions.add(chargeTransaction);
                 }
-            }
 
-            if(refundTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
-                updateReferencedChargeTransaction(chargeTransaction, refundTrans);
-                transactions.add(chargeTransaction);
             }
             TransactionDto savedRefundTransaction =
                     service.saveTransaction(TransactionConverter.convertToTransaction(refundTrans));
@@ -62,14 +63,14 @@ public class RefundHandler extends TransactionHandler {
 
     public void updateReferencedChargeTransaction(TransactionDto chargeTransaction, TransactionDto refundTransaction) {
 
-        MerchantDto merchant=chargeTransaction.getMerchant();
+        MerchantDto merchant=refundTransaction.getMerchant();
         if (merchant.getTotalTransactionSum()>=refundTransaction.getAmount()){
 
             updateMerchantTotalAmount(refundTransaction, merchant);
             chargeTransaction.setStatus(TransactionStatus.REFUNDED.name());
             service.saveTransaction(TransactionConverter.convertToTransaction(chargeTransaction));
+
         } else{
-            refundTransaction.setMerchant(merchant);
             refundTransaction.setStatus(TransactionStatus.ERROR.getName());
             refundTransaction.setReferenceIdentifier(null);
             log.info("The refund amount is bigger than Merchant Total transaction sum.");
@@ -80,6 +81,5 @@ public class RefundHandler extends TransactionHandler {
 
            Double amount = merchant.getTotalTransactionSum() - transaction.getAmount();
            merchant.setTotalTransactionSum(amount);
-           transaction.setMerchant(merchant);
     }
 }

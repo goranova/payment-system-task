@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 public class TransactionController {
@@ -26,7 +27,8 @@ public class TransactionController {
     @GetMapping("/transactions")
     public ModelAndView findTransaction() {
 
-        List<TransactionDto> transactions = transactionService.findTransactions();
+
+        Set<TransactionDto> transactions = transactionService.findAuthenticatedUserTransactions();
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("transactions", transactions);
         modelAndView.setViewName("transaction/transaction");

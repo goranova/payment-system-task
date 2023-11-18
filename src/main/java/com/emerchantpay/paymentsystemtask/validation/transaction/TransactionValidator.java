@@ -51,8 +51,9 @@ public interface TransactionValidator {
         if ( transaction.getStatus().equals(TransactionStatus.REVERSED.name())
                 || transaction.getStatus().equals(TransactionStatus.REFUNDED.name()) ) {
 
-            log.info(String.format("Transaction status will be set to error. " +
-                    "%s status is not allowed for %s transaction",transaction.getStatus(),transaction.getTransactionType()));
+            log.info(String.format("%s Transaction with status %s can not be imported. Check if exists possible transition!",
+                    transaction.getTransactionType(),
+                    transaction.getStatus()));
             transaction.setStatus(TransactionStatus.ERROR.getName());
 
         }
@@ -94,15 +95,13 @@ public interface TransactionValidator {
 
     default TransactionDto validateReferenceId(TransactionDto transaction) throws TransactionException {
 
-        if( transaction.getReferenceIdentifier()==null
-                && !transaction.getStatus().equals(TransactionStatus.ERROR.getName()) ) {
-            throw new TransactionException(Message.MISSING_TRANS_REFERENCE_IDENTIFIER.getName());
-        }
-        if(transaction.getReferenceIdentifier()!=null
-                && transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
+        if(transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
             transaction.setReferenceIdentifier(null);
+        }else {
+            if(transaction.getReferenceIdentifier()==null){
+                throw new TransactionException(Message.MISSING_TRANS_REFERENCE_IDENTIFIER.getName());
+            }
         }
-
         return transaction;
     }
 }

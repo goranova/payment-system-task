@@ -1,13 +1,17 @@
 package com.emerchantpay.paymentsystemtask.service.handler;
 
+import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
+import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.service.AuthenticationService;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.AuthorizeChain;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.ChainHandler;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.ReversalChain;
 import com.emerchantpay.paymentsystemtask.validation.transaction.AuthorizeValidator;
+import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +35,7 @@ public class TransactionHandlerService {
     @Autowired
     private ReversalChain reversalChain;
     @Autowired
-    private AuthorizeValidator authorizeValidator;
+    private AuthenticationService authenticationService;
 
     public List<TransactionDto> handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
 
@@ -40,7 +44,10 @@ public class TransactionHandlerService {
 
         for (TransactionDto tr : transactions) {
 
-            TransactionDto validatedTrans = authorizeValidator.validateTransaction(tr);
+            TransactionValidator validator = new AuthorizeValidator();
+            TransactionDto validatedTrans = validator.validateTransaction(tr);
+            setAuthenticatedMerchant(validatedTrans);
+
             TransactionType transactionType = TransactionType.getByValue(tr.getTransactionType()).get();
             if (chains.containsKey(transactionType)) {
 
@@ -66,4 +73,13 @@ public class TransactionHandlerService {
         return chains;
     }
 
+    public void setAuthenticatedMerchant(TransactionDto transaction) throws MerchantException {
+
+        MerchantDto merchant = authenticationService.getAuthenticatedMerchant();
+        if ( merchant!=null ){
+            transaction.setMerchant(merchant);
+        } else {
+            throw  new MerchantException(Message.MISSING_MERCHANT.getName());
+        }
+    }
 }

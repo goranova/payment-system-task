@@ -19,6 +19,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+	private static final String MERCHANT = "ROLE_MERCHANT";
+	private static final String ADMIN = "ROLE_ADMIN";
+
 	@Autowired
 	UserAccountService userService;
 
@@ -43,9 +46,9 @@ public class SecurityConfiguration {
 		httpSecurity.csrf(csrf -> csrf.disable()).
 		authorizeHttpRequests(authz -> authz
 				.requestMatchers("/payments").authenticated()
-				.requestMatchers("/alerts/**").hasAuthority("ROLE_ADMIN")
-				.requestMatchers("/merchants/**").hasAuthority("ROLE_ADMIN")
-				.requestMatchers("/transactions/**").hasAuthority("ROLE_ADMIN"))
+				.requestMatchers("/alerts/**").hasAuthority(ADMIN)
+				.requestMatchers("/merchants/**").hasAuthority(ADMIN)
+				.requestMatchers("/transactions/**").hasAuthority(MERCHANT))
 
 				.authenticationManager(authenticationManager)
 				.httpBasic(Customizer.withDefaults())

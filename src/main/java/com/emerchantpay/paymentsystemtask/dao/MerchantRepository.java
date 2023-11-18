@@ -22,4 +22,9 @@ public interface MerchantRepository extends JpaRepository<Merchant,Long> {
             @Param("description") String description,
             @Param("status") MerchantStatus status
     );
+
+    @Query("select merchant from Merchant merchant " +
+            "where merchant.description=:description ")
+    Merchant findMerchantByDescription(
+            @Param("description") String description);
 }

@@ -29,23 +29,25 @@ public class ReversalHandler extends TransactionHandler {
 
             TransactionDto authTransaction = null;
 
-            if(!reversalTrans.getStatus().equals(TransactionStatus.ERROR.getName())){
+            if(reversalTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
                 authTransaction =
-                        service.findNonReferencedAuthTransByRefId(reversalTrans.getReferenceIdentifier(), TransactionStatus.APPROVED);
+                        service.findNonReferencedAuthTransByRefIdMerId(reversalTrans.getReferenceIdentifier(),
+                                                                 TransactionStatus.APPROVED,
+                                                                 String.valueOf(reversalTrans.getMerchant().getIdentifier()));
 
                 if(authTransaction==null){
+
                     reversalTrans.setStatus(TransactionStatus.ERROR.getName());
                     reversalTrans.setReferenceIdentifier(null);
-                    reversalTrans.setMerchant(null);
                     log.info("There isn't Authorize transaction with the same reference Id");
+                }else {
+
+                    updateReferencedAuthTransaction(authTransaction);
+                    transactions.add(authTransaction);
                 }
             }
 
-            if(reversalTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
-                    updateReferencedAuthTransaction(authTransaction);
-                    reversalTrans.setMerchant(authTransaction.getMerchant());
-                    transactions.add(authTransaction);
-            }
+
             TransactionDto savedReversalTransaction =
                     service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));
             transactions.add(savedReversalTransaction);

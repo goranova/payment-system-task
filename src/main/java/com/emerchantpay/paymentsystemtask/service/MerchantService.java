@@ -36,20 +36,12 @@ public class MerchantService {
                 .orElse(new MerchantDto());
     }
 
-    public MerchantDto findByName(String id) {
+    public MerchantDto findMerchantByDescrStatus(String descr, String status) {
 
-        Long identifier = Long.valueOf(id);
-        Optional<Merchant> merchant = merchantRep.findById(identifier);
-        return merchant.map(mr->MerchantConverter.convertToMerchantWithTransactionsDto(mr, mr.getTransactions()))
-                .orElse(new MerchantDto());
-    }
-
-    public MerchantDto findMerchantByDescrStatus(MerchantDto mer) {
-
-       Merchant exitingMer =
-               merchantRep.findMerchantByDescrStatus(mer.getDescription(), MerchantStatus.valueOf(mer.getMerchantStatus()));
-       if(exitingMer!=null) {
-           return MerchantConverter.convertToMerchantDto(exitingMer);
+       Merchant mer =
+               merchantRep.findMerchantByDescrStatus(descr, MerchantStatus.valueOf(status));
+       if(mer!=null) {
+           return MerchantConverter.convertToMerchantWithTransactionsDto(mer,mer.getTransactions());
        }
        return null;
     }
@@ -59,7 +51,8 @@ public class MerchantService {
         MerchantValidator validator = new MerchantValidator();
         MerchantDto validMerchant = validator.validate(merchant);
 
-        MerchantDto existingMerchant = findMerchantByDescrStatus(validMerchant);
+        MerchantDto existingMerchant =
+                findMerchantByDescrStatus(validMerchant.getDescription(), validMerchant.getMerchantStatus());
 
         if (existingMerchant != null) {
             if (!existingMerchant.equals(validMerchant)) {

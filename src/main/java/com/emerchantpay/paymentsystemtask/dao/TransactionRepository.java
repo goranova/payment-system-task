@@ -12,29 +12,34 @@ import org.springframework.data.repository.query.Param;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
     @Query("select transaction from Transaction transaction")
-    List<Transaction> findTransactions();
+    Set<Transaction> findTransactions();
 
     @Query("select charge from ChargeTransaction charge " +
             "where charge.referenceIdentifier=:referenceIdentifier " +
-            "and charge.status=:status")
-    ChargeTransaction findChargeTransactionByRefId(
+            "and charge.status=:status "+
+            "and charge.merchant.identifier=:merchantId ")
+    ChargeTransaction findChargeTransactionByRefIdMerId(
             @Param("referenceIdentifier")String referenceIdentifier,
-            @Param("status") TransactionStatus status);
+            @Param("status") TransactionStatus status,
+            @Param("merchantId") String merchantId);
 
     @Query("select authorize from AuthorizeTransaction authorize " +
             "where authorize.uuid=:referenceIdentifier " +
-            "and authorize.status=:status ")
-    AuthorizeTransaction findAuthorizeTransactionByRefId(
+            "and authorize.status=:status " +
+            "and authorize.merchant.identifier=:merchantId " )
+    AuthorizeTransaction findAuthorizeTransactionByRefIdMerId(
             @Param("referenceIdentifier")String referenceIdentifier,
-            @Param("status") TransactionStatus status);
+            @Param("status") TransactionStatus status,
+            @Param("merchantId") String merchantId
+            );
 
     boolean existsByTransactionTypeAndReferenceIdentifier(String transactionType, String referenceIdentifier);
-
 
     @Modifying
     @Transactional
