@@ -6,10 +6,13 @@ import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.enums.MerchantStatus;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.model.Merchant;
+import com.emerchantpay.paymentsystemtask.files.csv.CsvHelper;
 import com.emerchantpay.paymentsystemtask.validation.MerchantValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,6 +81,14 @@ public class MerchantService {
             }
         }
         return false;
+    }
+
+    public void save(MultipartFile file) throws IOException, MerchantException {
+
+        List<MerchantDto> merchants = CsvHelper.csvToMerchant(file);
+        for(MerchantDto mer: merchants) {
+            processMerchant(mer);
+        }
     }
 
     public MerchantDto save(Merchant merchant) {

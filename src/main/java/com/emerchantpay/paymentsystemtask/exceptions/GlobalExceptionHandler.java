@@ -16,18 +16,8 @@ public class GlobalExceptionHandler {
 
     private static final String DUPLICATE_MERCHANT_C = "PAYMENT_SYSTEM.MER_DESCR_STAT_C";
 
-    @ExceptionHandler({MerchantException.class})
-    public ResponseEntity<Object> handleMerchantException(MerchantException exception) {
-
-        log.error(exception.getMessage(), exception);
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(exception.getMessage());
-    }
-
-    @ExceptionHandler({TransactionException.class})
-    public ResponseEntity<Object> handleTransactionException(TransactionException exception) {
+    @ExceptionHandler({MerchantException.class, TransactionException.class})
+    public ResponseEntity<Object> handleBusinessException(Exception exception) {
 
         log.error(exception.getMessage(), exception);
 

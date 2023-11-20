@@ -4,17 +4,27 @@ import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.response.ResponseMessage;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
+import com.emerchantpay.paymentsystemtask.files.csv.CsvHelper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class MerchantController {
+
+    Log log = LogFactory.getLog(this.getClass());
 
     @Autowired
     MerchantService merchantService;
@@ -96,5 +106,24 @@ public class MerchantController {
            processedMerchants.add(processedMer);
         }
         return processedMerchants;
+    }
+
+
+    @PostMapping("/merchants/files")
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) throws MerchantException {
+
+        if (CsvHelper.hasCSVFormat(file)) {
+            String message;
+            try {
+                merchantService.save(file);
+                message = String.format(Message.UPLOAD_FILE_SUCCESSFULLY.getName(), file.getOriginalFilename());
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                message = String.format(Message.COULD_NOT_UPLOAD_FILE.getName(), file.getOriginalFilename());
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(Message.UPLOAD_CSV_FILE.getName()));
     }
 }

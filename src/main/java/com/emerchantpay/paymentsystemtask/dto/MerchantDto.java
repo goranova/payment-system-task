@@ -9,10 +9,18 @@ public class MerchantDto {
     private Long identifier;
     private String description;
     private String email;
-
     private String merchantStatus;
     private Double totalTransactionSum;
     private Set<TransactionDto> transactions = new HashSet<>();
+
+    public MerchantDto (){}
+
+    public MerchantDto(String description, String email, String merchantStatus, Double totalTransactionSum) {
+        this.description = description;
+        this.email = email;
+        this.merchantStatus = merchantStatus;
+        this.totalTransactionSum = totalTransactionSum;
+    }
 
     public Long getIdentifier() {
         return identifier;

@@ -33,7 +33,13 @@ public enum Message {
 
     EDIT_MERCHANT("edit.merchant"),
 
-    DELETE_MERCHANT("delete.merchant");
+    DELETE_MERCHANT("delete.merchant"),
+
+    COULD_NOT_UPLOAD_FILE("could.not.upload.file"),
+
+    UPLOAD_CSV_FILE("upload.csv.file"),
+
+    UPLOAD_FILE_SUCCESSFULLY("upload.file.successfully");
 
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",
