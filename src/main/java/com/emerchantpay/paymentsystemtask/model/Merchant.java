@@ -33,6 +33,12 @@ public class Merchant implements Serializable {
 
     public Merchant (){}
 
+    public Merchant(String description, String email, MerchantStatus status) {
+        this.description = description;
+        this.email = email;
+        this.status = status;
+    }
+
     public Long getIdentifier() {
         return identifier;
     }

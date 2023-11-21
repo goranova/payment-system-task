@@ -17,9 +17,6 @@ import java.util.Set;
 
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
-    @Query("select transaction from Transaction transaction")
-    Set<Transaction> findTransactions();
-
     @Query("select charge from ChargeTransaction charge " +
             "where charge.referenceIdentifier=:referenceIdentifier " +
             "and charge.status=:status "+

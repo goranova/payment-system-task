@@ -35,8 +35,7 @@ public class Transaction implements Serializable {
     @Column(name = "TIMESTMP")
     private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-    public Transaction() {
-    }
+    public Transaction() {}
 
     public String getUuid() {
         return uuid;
@@ -103,5 +102,4 @@ public class Transaction implements Serializable {
     public Timestamp getTimestamp() {
         return timestamp;
     }
-
 }
