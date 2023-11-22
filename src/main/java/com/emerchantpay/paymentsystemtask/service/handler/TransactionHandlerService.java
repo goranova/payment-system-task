@@ -6,6 +6,7 @@ import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.response.ResponseTransactionMessage;
 import com.emerchantpay.paymentsystemtask.service.AuthenticationService;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.AuthorizeChain;
 import com.emerchantpay.paymentsystemtask.service.handler.chain.ChainHandler;
@@ -37,9 +38,10 @@ public class TransactionHandlerService {
     @Autowired
     private AuthenticationService authenticationService;
 
-    public List<TransactionDto> handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
+    public ResponseTransactionMessage handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
 
         List<TransactionDto> handledTransaction = new ArrayList<>();
+        ResponseTransactionMessage response= new ResponseTransactionMessage("", handledTransaction);
         Map<TransactionType, ChainHandler> chains = getChains();
 
         for (TransactionDto tr : transactions) {
@@ -53,11 +55,10 @@ public class TransactionHandlerService {
 
                 ChainHandler chain = chains.get(transactionType);
                 chain.setChain();
-                List<TransactionDto> handledTrans = chain.handleTransaction(validatedTrans);
-                handledTransaction.addAll(handledTrans);
+                return chain.handleTransaction(validatedTrans);
             }
         }
-        return handledTransaction;
+        return response;
 
     }
 

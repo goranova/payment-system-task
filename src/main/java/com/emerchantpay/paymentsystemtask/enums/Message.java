@@ -39,7 +39,17 @@ public enum Message {
 
     UPLOAD_CSV_FILE("upload.csv.file"),
 
-    UPLOAD_FILE_SUCCESSFULLY("upload.file.successfully");
+    UPLOAD_FILE_SUCCESSFULLY("upload.file.successfully"),
+
+    FORBIDDEN("forbidden"),
+
+    TRANSACTION_SAVED_SUCCESS("trans.success"),
+
+    TRANSACTION_REFERENCE("trans.reference"),
+
+    TRANSACTION_DIFF_AMOUNT("trans.diff.amount"),
+
+    NO_TRANSACTIONS("no.trans");
 
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",

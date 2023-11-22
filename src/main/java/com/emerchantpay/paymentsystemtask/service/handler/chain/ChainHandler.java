@@ -2,6 +2,7 @@ package com.emerchantpay.paymentsystemtask.service.handler.chain;
 
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.response.ResponseTransactionMessage;
 import com.emerchantpay.paymentsystemtask.service.handler.AuthorizeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,7 +17,7 @@ public abstract class  ChainHandler {
 
    public abstract void  setChain();
 
-    public List<TransactionDto> handleTransaction(TransactionDto transaction) throws TransactionException {
+    public ResponseTransactionMessage handleTransaction(TransactionDto transaction) throws TransactionException {
         return authorize.handleTransaction(transaction);
     }
 

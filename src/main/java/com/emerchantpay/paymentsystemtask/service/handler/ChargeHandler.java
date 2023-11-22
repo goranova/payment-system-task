@@ -3,9 +3,11 @@ package com.emerchantpay.paymentsystemtask.service.handler;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.dto.TransactionConverter;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
+import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
 import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.response.ResponseTransactionMessage;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -22,7 +24,7 @@ public class ChargeHandler extends TransactionHandler {
     TransactionService service;
 
     @Override
-    public List<TransactionDto> handleTransaction(TransactionDto transaction) throws TransactionException {
+    public ResponseTransactionMessage handleTransaction(TransactionDto transaction) throws TransactionException {
         List<TransactionDto> transactions = new ArrayList<>();
 
         if (transaction.getTransactionType().equals(TransactionType.CHARGE.getName())) {
@@ -35,9 +37,13 @@ public class ChargeHandler extends TransactionHandler {
                                                                  String.valueOf(transaction.getMerchant().getIdentifier()));
 
                 if(authTransaction==null){
+                    this.message =
+                            String.format(Message.TRANSACTION_REFERENCE.getName(),
+                                    TransactionType.AUTHORIZE.getName(),transaction.getReferenceIdentifier());
+                    log.info(this.message);
+
                     transaction.setStatus(TransactionStatus.ERROR.getName());
                     transaction.setReferenceIdentifier(null);
-                    log.info("There isn't Authorize transaction with the same reference Id");
                 }else {
                     updateMerchantTotalAmount(transaction, authTransaction);
                 }
@@ -46,14 +52,15 @@ public class ChargeHandler extends TransactionHandler {
 
             TransactionDto savedChargeTransaction = service.saveTransaction(TransactionConverter.convertToTransaction(transaction));
             transactions.add(savedChargeTransaction);
-            return transactions;
+
+            return new ResponseTransactionMessage(message, transactions);
 
         } else {
             if (this.nextTransition != null) {
                 return nextTransition.handleTransaction(transaction);
             }
         }
-        return transactions;
+        return new ResponseTransactionMessage(Message.NO_TRANSACTIONS.getName(), transactions);
     }
 
     private void updateMerchantTotalAmount(TransactionDto transaction, TransactionDto authTrans){
@@ -63,10 +70,13 @@ public class ChargeHandler extends TransactionHandler {
 
             Double amount = merchant.getTotalTransactionSum() + transaction.getAmount();
             merchant.setTotalTransactionSum(amount);
+            this.message = Message.TRANSACTION_SAVED_SUCCESS.getName();
         }else {
             transaction.setStatus(TransactionStatus.ERROR.getName());
             transaction.setReferenceIdentifier(null);
-            log.info("The Charge Transaction amount is different form Authorize Transaction amount");
+            this.message = String.format(Message.TRANSACTION_DIFF_AMOUNT.getName(),
+                    transaction.getTransactionType(),authTrans.getTransactionType());
+            log.info(this.message);
         }
     }
 }

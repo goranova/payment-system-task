@@ -3,9 +3,12 @@ package com.emerchantpay.paymentsystemtask.controller;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.response.ResponseTransactionMessage;
 import com.emerchantpay.paymentsystemtask.service.TransactionService;
 import com.emerchantpay.paymentsystemtask.service.handler.TransactionHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +39,8 @@ public class TransactionController {
         return modelAndView;
     }
     @PostMapping("/transactions")
-    public List<TransactionDto> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException, TransactionException {
-       return transactionHandlerService.handleTransactions(trans);
+    public ResponseEntity<ResponseTransactionMessage> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException, TransactionException {
+        ResponseTransactionMessage response= transactionHandlerService.handleTransactions(trans);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
