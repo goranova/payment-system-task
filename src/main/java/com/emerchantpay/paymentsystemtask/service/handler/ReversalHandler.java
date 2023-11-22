@@ -29,7 +29,7 @@ public class ReversalHandler extends TransactionHandler {
 
         if (reversalTrans.getTransactionType().equals(TransactionType.REVERSAL.getName())) {
 
-            TransactionDto authTransaction = null;
+            TransactionDto authTransaction;
 
             if(reversalTrans.getStatus().equals(TransactionStatus.APPROVED.name())){
                 authTransaction =
@@ -46,13 +46,10 @@ public class ReversalHandler extends TransactionHandler {
                     reversalTrans.setStatus(TransactionStatus.ERROR.getName());
                     reversalTrans.setReferenceIdentifier(null);
                 }else {
-
                     updateReferencedAuthTransaction(authTransaction);
                     transactions.add(authTransaction);
                 }
             }
-
-
             TransactionDto savedReversalTransaction =
                     service.saveTransaction(TransactionConverter.convertToTransaction(reversalTrans));
             transactions.add(savedReversalTransaction);
@@ -72,7 +69,7 @@ public class ReversalHandler extends TransactionHandler {
 
         authTransaction.setStatus(TransactionStatus.REVERSED.name());
         service.saveTransaction(TransactionConverter.convertToTransaction(authTransaction));
-        this.message= Message.TRANSACTION_SAVED_SUCCESS.getName();
+        this.message = Message.TRANSACTION_SAVED_SUCCESS.getName();
     }
 
 }

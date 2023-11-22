@@ -1,7 +1,5 @@
 package com.emerchantpay.paymentsystemtask.dto;
 
-import com.emerchantpay.paymentsystemtask.model.Merchant;
-
 public class TransactionDto {
     private String uuid;
     private String status;
@@ -14,6 +12,19 @@ public class TransactionDto {
     private MerchantDto merchant;
 
     private String timestamp ;
+
+    public TransactionDto(){}
+
+    public TransactionDto(String uuid, String status, String transactionType, String customerEmail, String customerPhone, Double amount, String referenceIdentifier, MerchantDto merchant) {
+        this.uuid = uuid;
+        this.status = status;
+        this.transactionType = transactionType;
+        this.customerEmail = customerEmail;
+        this.customerPhone = customerPhone;
+        this.amount = amount;
+        this.referenceIdentifier = referenceIdentifier;
+        this.merchant = merchant;
+    }
 
     public String getUuid() {
         return uuid;
