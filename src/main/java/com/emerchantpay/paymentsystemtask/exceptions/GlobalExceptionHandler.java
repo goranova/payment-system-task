@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 
 
 @ControllerAdvice
@@ -42,6 +43,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(exception.getMessage());
+    }
+
+    @ExceptionHandler({HttpClientErrorException.Forbidden.class})
+    public ResponseEntity<Object> handleForbiddenException(HttpClientErrorException.Forbidden exception) {
+
+        log.error(exception.getMessage(), exception);
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(Message.FORBIDDEN.getName());
     }
 
     @ExceptionHandler({Exception.class})
