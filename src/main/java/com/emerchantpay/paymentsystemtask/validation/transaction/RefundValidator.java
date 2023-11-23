@@ -7,7 +7,7 @@ import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 
 public class RefundValidator implements TransactionValidator {
 
-    public TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException, MerchantException {
+    public TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException {
         if(transaction.getTransactionType().equals(TransactionType.REFUND.getName())){
             return validate(transaction);
         }else return new ReversalValidator().validateTransaction(transaction);

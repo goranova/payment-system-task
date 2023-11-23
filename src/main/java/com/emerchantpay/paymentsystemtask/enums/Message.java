@@ -49,7 +49,9 @@ public enum Message {
 
     TRANSACTION_DIFF_AMOUNT("trans.diff.amount"),
 
-    NO_TRANSACTIONS("no.trans");
+    NO_TRANSACTIONS("no.trans"),
+
+    INVALID_TELEPHONE_NUMBER("invalid.phone");
 
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle("messages",

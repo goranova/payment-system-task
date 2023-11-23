@@ -3,22 +3,28 @@ package com.emerchantpay.paymentsystemtask.validation.transaction;
 import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
-import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
 import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
 import com.emerchantpay.paymentsystemtask.utils.TransactionUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-import java.util.UUID;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 
 public interface TransactionValidator {
 
     Log log = LogFactory.getLog(TransactionValidator.class);
+    String patternPhone =
+            "^(\\+\\d{1,3}( )?)?((\\(\\d{3}\\))|\\d{3})[- .]?\\d{3}[- .]?\\d{4}$"
+            + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?){2}\\d{3}$"
+            + "|^(\\+\\d{1,3}( )?)?(\\d{3}[ ]?)(\\d{2}[ ]?){2}\\d{2}$";
 
-     default TransactionDto validate(TransactionDto transaction) throws TransactionException, MerchantException {
+    String patternUuid="^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
+
+
+    default TransactionDto validate(TransactionDto transaction) throws TransactionException {
 
          if( transaction==null ){
              throw new TransactionException(Message.MISSING_TRANSACTION.getName());
@@ -28,14 +34,15 @@ public interface TransactionValidator {
         validateSupportedStatus(transaction);
         validateStatus(transaction);
         validateEmail(transaction);
+        validatePhone(transaction);
         validateAmount(transaction);
         validateReferenceId(transaction);
         return transaction;
      }
 
-    TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException, MerchantException;
+    TransactionDto validateTransaction(TransactionDto transaction) throws TransactionException;
 
-     default TransactionDto validateSupportedStatus(TransactionDto transaction) throws TransactionException {
+     default void validateSupportedStatus(TransactionDto transaction) throws TransactionException {
          boolean isStatusNonMatch = Stream.of(TransactionStatus.values())
                  .noneMatch(s->s.getName().equals(transaction.getStatus()));
 
@@ -43,10 +50,9 @@ public interface TransactionValidator {
              throw new TransactionException(Message.UNSUPPORTED_TRANSACTION_STATUS.getName(),
                      transaction.getStatus(), transaction.getTransactionType());
          }
-         return transaction;
      }
 
-    default TransactionDto validateStatus(TransactionDto transaction) {
+    default void validateStatus(TransactionDto transaction) {
 
         if ( transaction.getStatus().equals(TransactionStatus.REVERSED.name())
                 || transaction.getStatus().equals(TransactionStatus.REFUNDED.name()) ) {
@@ -55,45 +61,34 @@ public interface TransactionValidator {
                     transaction.getTransactionType(),
                     transaction.getStatus()));
             transaction.setStatus(TransactionStatus.ERROR.getName());
-
         }
-
-        return transaction;
     }
 
-    default TransactionDto validateUuid(TransactionDto transaction){
+    default void validateUuid(TransactionDto transaction){
 
-        if(transaction.getUuid()!=null){
-            String validUuid = UUID.fromString(transaction.getUuid()).toString();
-            if (validUuid!=null && validUuid.equals(transaction.getUuid()) ){
-                return transaction;
-            }
-        }
-
-        transaction.setUuid(TransactionUtils.generateRandomUuid());
-        return transaction;
+         Pattern pattern = Pattern.compile(patternUuid);
+         if(transaction.getUuid()==null || !pattern.matcher(transaction.getUuid()).matches()){
+             transaction.setUuid(TransactionUtils.generateRandomUuid());
+         }
     }
 
-    default TransactionDto validateEmail(TransactionDto transaction) throws TransactionException {
+    default void validateEmail(TransactionDto transaction) throws TransactionException {
 
         boolean isValid = EmailValidator.getInstance().isValid(transaction.getCustomerEmail());
         if (!isValid) {
             throw new TransactionException(Message.INVALID_EMAIL.getName(), transaction.getCustomerEmail());
         }
-        return transaction;
-
     }
 
-    default TransactionDto validateAmount(TransactionDto transaction) throws TransactionException {
+    default void validateAmount(TransactionDto transaction) throws TransactionException {
 
         if( transaction.getAmount()==null || transaction.getAmount()<0 ) {
             throw new TransactionException(Message.INVALID_TRANSACTION_SUM.getName(),
                     String.valueOf(transaction.getAmount()));
         }
-        return transaction;
     }
 
-    default TransactionDto validateReferenceId(TransactionDto transaction) throws TransactionException {
+    default void validateReferenceId(TransactionDto transaction) throws TransactionException {
 
         if(transaction.getStatus().equals(TransactionStatus.ERROR.getName())){
             transaction.setReferenceIdentifier(null);
@@ -102,6 +97,14 @@ public interface TransactionValidator {
                 throw new TransactionException(Message.MISSING_TRANS_REFERENCE_IDENTIFIER.getName());
             }
         }
-        return transaction;
+    }
+
+    default void validatePhone(TransactionDto transaction) throws TransactionException {
+        Pattern pattern = Pattern.compile(patternPhone);
+        String phone= transaction.getCustomerPhone();
+
+        if (phone == null || !pattern.matcher(phone).matches() ) {
+            throw  new TransactionException(String.format(Message.INVALID_TELEPHONE_NUMBER.getName(),phone));
+        }
     }
 }

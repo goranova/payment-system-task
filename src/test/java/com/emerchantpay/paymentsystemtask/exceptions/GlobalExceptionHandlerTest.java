@@ -2,7 +2,11 @@ package com.emerchantpay.paymentsystemtask.exceptions;
 
 import com.emerchantpay.paymentsystemtask.PaymentsUtils;
 import com.emerchantpay.paymentsystemtask.controller.TransactionController;
+import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
+import com.emerchantpay.paymentsystemtask.dto.TransactionDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
+import com.emerchantpay.paymentsystemtask.enums.TransactionStatus;
+import com.emerchantpay.paymentsystemtask.enums.TransactionType;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,13 +51,16 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void handleBusinessExceptionTest_merchant() throws Exception {
 
+        List<MerchantDto> merchants = PaymentsUtils.createListMerchants();
+        String content = PaymentsUtils.getMerchantAsJson(merchants);
+
         Mockito.when(merchantService.processMerchant(Mockito.any()))
                 .thenThrow(new MerchantException(Message.INACTIVE_MERCHANT.getName()));
         MvcResult response = mvc.perform(MockMvcRequestBuilders
                         .post("/merchants")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(PaymentsUtils.getMerchantAsJson()))
+                        .content(content))
                 .andDo(print())
                 .andExpect(status().is5xxServerError())
                 .andReturn();
@@ -63,13 +72,17 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void handleBusinessExceptionTest_transaction() throws Exception {
 
+        TransactionDto trans = PaymentsUtils.createTransactionDto("072C5DDA-0AF8-42EA-ACEB-068C52C2C3AC",
+                                                                 TransactionStatus.APPROVED.getName(),
+                                                                 TransactionType.AUTHORIZE.getName(),null,2400.0 );
+
         Mockito.when(transactionController.importTransactions(Mockito.any()))
                 .thenThrow(new TransactionException(Message.MISSING_TRANS_REFERENCE_IDENTIFIER.getName()));
         MvcResult response = mvc.perform(MockMvcRequestBuilders
                         .post("/transactions")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(PaymentsUtils.getTransAsJson()))
+                        .content(PaymentsUtils.getTransAsJson(trans)))
                 .andDo(print())
                 .andExpect(status().is5xxServerError())
                 .andReturn();
@@ -80,6 +93,8 @@ public class GlobalExceptionHandlerTest {
 
     @Test
     public void handleSqlExceptionTest() throws Exception {
+        List<MerchantDto> merchants = PaymentsUtils.createListMerchants();
+        String content = PaymentsUtils.getMerchantAsJson(merchants);
 
         Mockito.when(merchantService.processMerchant(Mockito.any()))
                 .thenThrow(new DataIntegrityViolationException(DUPLICATE_MERCHANT_C));
@@ -87,7 +102,7 @@ public class GlobalExceptionHandlerTest {
                         .post("/merchants")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(PaymentsUtils.getMerchantAsJson()))
+                        .content(content))
                 .andDo(print())
                 .andExpect(status().is5xxServerError())
                 .andReturn();
@@ -99,6 +114,10 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void handleForbiddenExceptionTest() throws Exception {
 
+        TransactionDto trans = PaymentsUtils.createTransactionDto("072C5DDA-0AF8-42EA-ACEB-068C52C2C3AC",
+                TransactionStatus.APPROVED.getName(),
+                TransactionType.AUTHORIZE.getName(),null,2400.0 );
+
         Mockito.when(transactionController.importTransactions(Mockito.any()))
                 .thenThrow(HttpClientErrorException
                         .create(HttpStatus.FORBIDDEN, Message.FORBIDDEN.getName(), null, null, null));
@@ -106,7 +125,7 @@ public class GlobalExceptionHandlerTest {
                         .post("/transactions")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(PaymentsUtils.getTransAsJson()))
+                        .content(PaymentsUtils.getTransAsJson(trans)))
                 .andDo(print())
                 .andExpect(status().isForbidden())
                 .andReturn();
@@ -118,13 +137,17 @@ public class GlobalExceptionHandlerTest {
     @Test
     public void handleExceptionTest() throws Exception {
 
+        TransactionDto trans = PaymentsUtils.createTransactionDto("072C5DDA-0AF8-42EA-ACEB-068C52C2C3AC",
+                TransactionStatus.APPROVED.getName(),
+                TransactionType.AUTHORIZE.getName(),null,2400.0 );
+
         Mockito.when(transactionController.importTransactions(Mockito.any()))
                 .thenThrow(new RuntimeException("Runtime exception is thrown"));
         MvcResult response = mvc.perform(MockMvcRequestBuilders
                         .post("/transactions")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(PaymentsUtils.getTransAsJson()))
+                        .content(PaymentsUtils.getTransAsJson(trans)))
                 .andDo(print())
                 .andExpect(status().is5xxServerError())
                 .andReturn();

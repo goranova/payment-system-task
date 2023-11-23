@@ -1,0 +1,79 @@
+<html>
+
+
+<head>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light"  style="background-color:#E0FFFF;">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+    <li class="nav-item active">
+        <a class="nav-link" href="/payments">Home</a>
+      </li>
+    </ul>
+    
+  </div>
+</nav>
+
+  <div>
+      <table class="table table-bordered">
+          <thead>
+          <tr>
+              <th> Merchant ID</th>>
+              <th>Merchant Status</th>
+              <th>Merchant Description</th>
+              <th>Merchant Email</th>
+              <th>Total Transaction sum</th>
+              <th> Edit Merchant</th>>
+              <th> Delete Merchant</th>>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+              <td>305</td>
+              <td>ACTIVE</td>
+              <td>Test1</td>
+              <td>test1@test1.com</td>
+              <td>2000.0</td>
+              <form  action =  "/merchants/305"    method="GET">
+                <td><button type="submit" class="editbutton" >Edit</button></td>
+              </form>
+              <form  action =  "/merchants/305"   method="post"><input type="hidden" name="_method" value="DELETE"/>
+                  <td><button type="submit" class="deletebutton" >Delete</button></td>
+              </form>
+          </tr>
+          <tr>
+              <td>306</td>
+              <td>ACTIVE</td>
+              <td>Test2</td>
+              <td>test2@test2.com</td>
+              <td>3000.0</td>
+              <form  action =  "/merchants/306"    method="GET">
+                <td><button type="submit" class="editbutton" >Edit</button></td>
+              </form>
+              <form  action =  "/merchants/306"   method="post"><input type="hidden" name="_method" value="DELETE"/>
+                  <td><button type="submit" class="deletebutton" >Delete</button></td>
+              </form>
+          </tr>
+          </tbody>
+      </table>
+
+  </div>
+
+</body>
+</html>

@@ -39,8 +39,8 @@ public class TransactionController {
         return modelAndView;
     }
     @PostMapping("/transactions")
-    public ResponseEntity<ResponseTransactionMessage> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException, TransactionException {
-        ResponseTransactionMessage response = transactionHandlerService.handleTransactions(trans);
+    public ResponseEntity<List<ResponseTransactionMessage>> importTransactions(@RequestBody List<TransactionDto> trans) throws MerchantException, TransactionException {
+        List<ResponseTransactionMessage> response = transactionHandlerService.handleTransactions(trans);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

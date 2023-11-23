@@ -3,10 +3,9 @@ package com.emerchantpay.paymentsystemtask.controller;
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
 import com.emerchantpay.paymentsystemtask.enums.Message;
 import com.emerchantpay.paymentsystemtask.exceptions.MerchantException;
-import com.emerchantpay.paymentsystemtask.exceptions.TransactionException;
+import com.emerchantpay.paymentsystemtask.files.csv.CsvHelper;
 import com.emerchantpay.paymentsystemtask.response.ResponseMessage;
 import com.emerchantpay.paymentsystemtask.service.MerchantService;
-import com.emerchantpay.paymentsystemtask.files.csv.CsvHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +97,7 @@ public class MerchantController {
 
     }
     @PostMapping("/merchants")
-    public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants) throws MerchantException, TransactionException {
+    public List<MerchantDto> importMerchants(@RequestBody List<MerchantDto> merchants) throws MerchantException {
 
         List<MerchantDto> processedMerchants=new ArrayList<>();
         for (MerchantDto mer:merchants){

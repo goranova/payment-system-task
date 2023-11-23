@@ -43,9 +43,14 @@ public class TransactionControllerTest {
 
     @Test
     public void findTransactionTest() throws Exception {
-        Set<TransactionDto> transactions = PaymentsUtils.createSetTransactions();
+
+        TransactionDto auth = new TransactionDto();
+        auth.setTransactionType(TransactionType.AUTHORIZE.getName());
+        auth.setStatus(TransactionStatus.APPROVED.getName());
+        auth.setAmount(200.0);
+
         Mockito.when(transactionService.findAuthenticatedUserTransactions())
-                .thenReturn(transactions);
+                .thenReturn(Set.of(auth));
 
         File transHtmlResponse = new File("src/test/resources/transactionResponse.html");
         String transResponse = new String(Files.readAllBytes(transHtmlResponse.toPath()));
@@ -62,20 +67,22 @@ public class TransactionControllerTest {
 
     @Test
     public void importAuthTransactionsTest() throws Exception {
-        String content = PaymentsUtils.getTransAsJson("a404d5c4-1b49-40fa-9d0e-d36e500bdf53", TransactionType.AUTHORIZE.getName(), null);
-        TransactionDto trans = PaymentsUtils.createTransactionDto("a404d5c4-1b49-40fa-9d0e-d36e500bdf53",
-                TransactionStatus.APPROVED.getName(),
-                TransactionType.AUTHORIZE.getName(),
-                null);
+
+        TransactionDto auth = PaymentsUtils.createTransactionDto("a404d5c4-1b49-40fa-9d0e-d36e500bdf53",
+                                                                  TransactionStatus.APPROVED.getName(),
+                                                                  TransactionType.AUTHORIZE.getName(),
+                                                         null,24350.0);
+        String content = PaymentsUtils.getTransAsJson(auth);
+
 
         ResponseTransactionMessage message =
-                new ResponseTransactionMessage(Message.TRANSACTION_SAVED_SUCCESS.getName(), List.of(trans));
+                new ResponseTransactionMessage(Message.TRANSACTION_SAVED_SUCCESS.getName(), List.of(auth));
 
         Mockito.when(transactionHandlerService.handleTransactions(Mockito.any()))
-                .thenReturn(message);
+                .thenReturn(List.of(message));
 
-        File transHtmlResponse = new File("src/test/resources/AuthResponse.json");
-        String transResponse = new String(Files.readAllBytes(transHtmlResponse.toPath()));
+        File transFileResponse = new File("src/test/resources/AuthResponse.json");
+        String transResponse = new String(Files.readAllBytes(transFileResponse.toPath()));
         mvc.perform(MockMvcRequestBuilders
                         .post("/transactions")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -89,21 +96,61 @@ public class TransactionControllerTest {
 
     @Test
     public void importReversalErrorTransactionsTest() throws Exception {
-        String content = PaymentsUtils.getTransAsJson("a404d5c4-1b49-40fa-9d0e-d36e500bdf52", TransactionType.REVERSAL.getName(), "a404d5c4-1b49-40fa-9d0e-d36e500bdf49");
-        TransactionDto trans = PaymentsUtils.createTransactionDto("a404d5c4-1b49-40fa-9d0e-d36e500bdf52",
+
+        TransactionDto reversal = PaymentsUtils.createTransactionDto ("a404d5c4-1b49-40fa-9d0e-d36e500bdf52",
+                                  TransactionStatus.APPROVED.getName(),
+                                  TransactionType.REVERSAL.getName(),
+                         "a404d5c4-1b49-40fa-9d0e-d36e500bdf49",24350.0);
+
+        String content = PaymentsUtils.getTransAsJson(reversal);
+
+        TransactionDto reversalError = PaymentsUtils.createTransactionDto("a404d5c4-1b49-40fa-9d0e-d36e500bdf52",
                 TransactionStatus.ERROR.getName(),
                 TransactionType.REVERSAL.getName(),
-                null);
+                null,24350.0);
 
         ResponseTransactionMessage message =
                 new ResponseTransactionMessage(String.format(Message.TRANSACTION_REFERENCE.getName(),
                         TransactionType.AUTHORIZE.getName(),
-                        "a404d5c4-1b49-40fa-9d0e-d36e500bdf49"),List.of(trans));
+                        "a404d5c4-1b49-40fa-9d0e-d36e500bdf49"),List.of(reversalError));
 
         Mockito.when(transactionHandlerService.handleTransactions(Mockito.any()))
-                .thenReturn(message);
+                .thenReturn(List.of(message));
 
         File transFileResponse = new File("src/test/resources/ReversalErrorResponse.json");
+        String transResponse = new String(Files.readAllBytes(transFileResponse.toPath()));
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/transactions")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(transResponse))
+                .andReturn();
+    }
+
+    @Test
+    public void importRefundTransactionsTest() throws Exception {
+
+        TransactionDto chTrans = PaymentsUtils.createTransactionDto("a404d5c4-1b49-40fa-9d0e-d36e500bdf54",
+                TransactionStatus.REFUNDED.getName(),
+                TransactionType.CHARGE.getName(),
+                "a404d5c4-1b49-40fa-9d0e-d36e500bdf53",24850.0);
+
+        TransactionDto refTrans = PaymentsUtils.createTransactionDto("a404d5c4-1b49-40fa-9d0e-d36e500bdf55",
+                TransactionStatus.APPROVED.getName(),
+                TransactionType.REFUND.getName(),
+                "a404d5c4-1b49-40fa-9d0e-d36e500bdf53",24350.0);
+
+        String content = PaymentsUtils.getTransAsJson(refTrans);
+        ResponseTransactionMessage message =
+                new ResponseTransactionMessage(String.format(Message.TRANSACTION_SAVED_SUCCESS.getName()),List.of(chTrans,refTrans));
+
+        Mockito.when(transactionHandlerService.handleTransactions(Mockito.any()))
+                .thenReturn(List.of(message));
+
+        File transFileResponse = new File("src/test/resources/RefundResponse.json");
         String transResponse = new String(Files.readAllBytes(transFileResponse.toPath()));
         mvc.perform(MockMvcRequestBuilders
                         .post("/transactions")

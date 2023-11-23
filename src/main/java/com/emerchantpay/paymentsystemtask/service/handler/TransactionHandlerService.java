@@ -38,11 +38,10 @@ public class TransactionHandlerService {
     @Autowired
     private AuthenticationService authenticationService;
 
-    public ResponseTransactionMessage handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
+    public List<ResponseTransactionMessage> handleTransactions (List<TransactionDto> transactions) throws TransactionException, MerchantException {
 
-        List<TransactionDto> handledTransaction = new ArrayList<>();
-        ResponseTransactionMessage response= new ResponseTransactionMessage("", handledTransaction);
         Map<TransactionType, ChainHandler> chains = getChains();
+        List<ResponseTransactionMessage> listMessage = new ArrayList<>();
 
         for (TransactionDto tr : transactions) {
 
@@ -55,10 +54,10 @@ public class TransactionHandlerService {
 
                 ChainHandler chain = chains.get(transactionType);
                 chain.setChain();
-                return chain.handleTransaction(validatedTrans);
+                listMessage.add(chain.handleTransaction(validatedTrans));
             }
         }
-        return response;
+        return listMessage;
 
     }
 
