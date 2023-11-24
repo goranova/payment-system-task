@@ -8,7 +8,7 @@ import com.emerchantpay.paymentsystemtask.validation.transaction.AuthorizeValida
 import com.emerchantpay.paymentsystemtask.validation.transaction.ChargeValidator;
 import com.emerchantpay.paymentsystemtask.validation.transaction.ReversalValidator;
 import com.emerchantpay.paymentsystemtask.validation.transaction.TransactionValidator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,7 +1,7 @@
 package com.emerchantpay.paymentsystemtask.files.csv;
 
 import com.emerchantpay.paymentsystemtask.dto.MerchantDto;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
