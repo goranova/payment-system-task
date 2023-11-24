@@ -1,0 +1,145 @@
+
+
+authenticated user:
+
+"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 25850.0,
+					"transactions": []
+				}
+
+
+
+requestBoy:
+
+http://localhost:8080/transactions
+
+
+[ {
+    "uuid" : "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+    "status": "APPROVED",
+    "transactionType": "Authorize",
+    "customerEmail" : "tsvety@gmail.com",
+    "customerPhone" : "+359884719141",
+    "amount":500
+},
+
+ {
+    "uuid" : "a404d5c4-1b49-40fa-9d0e-d36e500bdf11",
+    "status": "APPROVED",
+    "transactionType": "Charge",
+    "customerEmail" : "tsvety@gmail.com",
+    "customerPhone" : "+3598884719141",
+    "referenceIdentifier" :  "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+    "amount":500
+},
+  
+
+ {
+    "uuid" : "a404d5c4-1b49-40fa-9d0e-d36e500bdf12",
+    "status": "APPROVED",
+    "transactionType": "Refund",
+    "customerEmail" : "tsvety@gmail.com",
+    "customerPhone" : "+3598884719141",
+    "referenceIdentifier" :  "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+    "amount":500
+}  
+]
+
+
+
+
+
+
+
+Response
+
+
+[
+	{
+		"message": "The transaction is saved successfully",
+		"transactions": [
+			{
+				"uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+				"status": "APPROVED",
+				"transactionType": "Authorize",
+				"customerEmail": "tsvety@gmail.com",
+				"customerPhone": "+359884719141",
+				"amount": 500.0,
+				"referenceIdentifier": null,
+				"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 25850.0,
+					"transactions": []
+				}
+			}
+		]
+	},
+	{
+		"message": "The transaction is saved successfully",
+		"transactions": [
+			{
+				"uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf11",
+				"status": "APPROVED",
+				"transactionType": "Charge",
+				"customerEmail": "tsvety@gmail.com",
+				"customerPhone": "+3598884719141",
+				"amount": 500.0,
+				"referenceIdentifier": "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+				"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 26350.0,
+					"transactions": []
+				}
+			}
+		]
+	},
+	{
+		"message": "The transaction is saved successfully",
+		"transactions": [
+			{
+				"uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf11",
+				"status": "REFUNDED",
+				"transactionType": "Charge",
+				"customerEmail": "tsvety@gmail.com",
+				"customerPhone": "+3598884719141",
+				"amount": 500.0,
+				"referenceIdentifier": "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+				"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 26350.0,
+					"transactions": []
+				}
+			},
+			{
+				"uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf12",
+				"status": "APPROVED",
+				"transactionType": "Refund",
+				"customerEmail": "tsvety@gmail.com",
+				"customerPhone": "+3598884719141",
+				"amount": 500.0,
+				"referenceIdentifier": "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+				"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 25850.0,
+					"transactions": []
+				}
+			}
+		]
+	}
+]

@@ -1,0 +1,60 @@
+
+
+authenticated user:
+
+"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 25850.0,
+					"transactions": []
+				}
+
+
+
+requestBoy:
+
+http://localhost:8080/transactions
+
+
+[
+	{
+		"uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf19",
+		"status": "APPROVED",
+		"transactionType": "Refund",
+		"customerEmail": "tsvety@gmail.com",
+		"customerPhone": "+3598884719141",
+		"referenceIdentifier": "a404d5c4-1b49-40fa-9d0e-d36e500bdf01",
+		"amount": 500
+	}
+]
+
+
+
+Response
+
+[
+    {
+        "message": "There isn't Charge transaction with the same reference Id: a404d5c4-1b49-40fa-9d0e-d36e500bdf01",
+        "transactions": [
+            {
+                "uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf19",
+                "status": "ERROR",
+                "transactionType": "Refund",
+                "customerEmail": "tsvety@gmail.com",
+                "customerPhone": "+3598884719141",
+                "amount": 500.0,
+                "referenceIdentifier": null,
+                "merchant": {
+                    "identifier": 350,
+                    "description": "Lidl Germany",
+                    "email": "lidl@lidl.com",
+                    "merchantStatus": "ACTIVE",
+                    "totalTransactionSum": 25850.0,
+                    "transactions": []
+                }
+            }
+        ]
+    }
+]

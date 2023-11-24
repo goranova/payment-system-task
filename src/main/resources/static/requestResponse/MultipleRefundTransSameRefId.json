@@ -1,0 +1,35 @@
+
+
+authenticated user:
+
+"merchant": {
+					"identifier": 350,
+					"description": "Lidl Germany",
+					"email": "lidl@lidl.com",
+					"merchantStatus": "ACTIVE",
+					"totalTransactionSum": 25850.0,
+					"transactions": []
+				}
+
+
+requestBoy:
+
+http://localhost:8080/transactions
+
+
+
+[
+	{
+		"uuid": "a404d5c4-1b49-40fa-9d0e-d36e500bdf21",
+		"status": "APPROVED",
+		"transactionType": "Refund",
+		"customerEmail": "tsvety@gmail.com",
+		"customerPhone": "+3598884719141",
+		"referenceIdentifier": "a404d5c4-1b49-40fa-9d0e-d36e500bdf10",
+		"amount": 500
+	}
+]
+
+Respoonse:
+
+The transaction has already been referenced. Multiple Refund transaction with the same reference ID: a404d5c4-1b49-40fa-9d0e-d36e500bdf10
