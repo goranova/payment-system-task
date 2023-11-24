@@ -1,0 +1,77 @@
+Authenticated User: ADMIN
+
+petia	email@gmail.com	$2a$10$FH2URkNNQevDRcrY6cQsL.lCjQWee8WOQLKehQiF5yyxVF2iA3OsO	ADMIN
+
+
+
+
+Request:
+
+http://localhost:8080/merchants
+
+[
+	{
+		"description": "Power Box",
+		"email": "poweBox@powerBox.com",
+		"merchantStatus": "ACTIVE",
+		"totalTransactionSum": "5000"
+	},
+	{
+		"description": "Power Box",
+		"email": "poweBox@powerBox.com",
+		"merchantStatus": "INACTIVE",
+		"totalTransactionSum": "5000"
+	},
+	{
+		"description": "Fit city",
+		"email": "fitCity@fitCity.com",
+		"merchantStatus": "ACTIVE",
+		"totalTransactionSum": "5000"
+	},
+	{
+		"description": "Kafland",
+		"email": "kaufland@kaufland.com",
+		"merchantStatus": "ACTIVE",
+		"totalTransactionSum": "5000"
+	}
+]
+
+Response:
+
+
+
+
+[
+    {
+        "identifier": 416,
+        "description": "Power Box",
+        "email": "poweBox@powerBox.com",
+        "merchantStatus": "ACTIVE",
+        "totalTransactionSum": 5000.0,
+        "transactions": []
+    },
+    {
+        "identifier": 417,
+        "description": "Power Box",
+        "email": "poweBox@powerBox.com",
+        "merchantStatus": "INACTIVE",
+        "totalTransactionSum": 5000.0,
+        "transactions": []
+    },
+    {
+        "identifier": 418,
+        "description": "Fit city",
+        "email": "fitCity@fitCity.com",
+        "merchantStatus": "ACTIVE",
+        "totalTransactionSum": 5000.0,
+        "transactions": []
+    },
+    {
+        "identifier": 419,
+        "description": "Kafland",
+        "email": "kaufland@kaufland.com",
+        "merchantStatus": "ACTIVE",
+        "totalTransactionSum": 5000.0,
+        "transactions": []
+    }
+]

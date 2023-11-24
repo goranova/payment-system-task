@@ -7,6 +7,9 @@ payment-system-task/src/main/resources/static/dbFiles/
 The examples files for request and response are in : 
 payment-system-task/src/main/resources/static/requestResponse 
 
+The example csv file for import merchant:
+payment-system-task/src/test/resources/merchants.csv
+
 The users have ADMIN and MERCHANT roles. The ADMIN can create,edit and delete merchants, 
 MERCHANT can list his transactions and import his transactions.
 

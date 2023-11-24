@@ -1,0 +1,38 @@
+Authenticated User: ADMIN
+
+petia	email@gmail.com	$2a$10$FH2URkNNQevDRcrY6cQsL.lCjQWee8WOQLKehQiF5yyxVF2iA3OsO	ADMIN
+
+
+
+
+Request:
+
+http://localhost:8080/merchants
+
+
+[
+	{
+		"description": "Power Box",
+		"email": "poweBox@powerBox.com",
+		"merchantStatus": "ACTIVE",
+		"totalTransactionSum": "5000"
+	}
+]
+
+
+Response 
+Return existing merchant
+
+
+
+[
+    {
+        "identifier": 416,
+        "description": "Power Box",
+        "email": "poweBox@powerBox.com",
+        "merchantStatus": "ACTIVE",
+        "totalTransactionSum": 5000.0,
+        "transactions": []
+    }
+]
+
